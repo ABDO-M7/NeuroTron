@@ -4,5 +4,5 @@ buildCommand = "npm install && npx prisma generate && npm run build"
 
 [deploy]
 startCommand = "node dist/main"
-healthcheckPath = "/"
+healthcheckPath = "/api/subjects"
 restartPolicyType = "ON_FAILURE"
