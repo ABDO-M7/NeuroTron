@@ -9,6 +9,8 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter }
 
 const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL?.replace("/api", "") || "http://localhost:4000"
 
+import Image from "next/image"
+
 export default function RegisterPage() {
     const router = useRouter()
     const searchParams = useSearchParams()
@@ -60,8 +62,8 @@ export default function RegisterPage() {
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-violet-500/8 blur-[120px] rounded-full pointer-events-none" />
 
             <div className="flex items-center gap-2 mb-8 relative">
-                <div className="bg-violet-500/20 p-2 rounded-xl">
-                    <BookOpen className="h-6 w-6 text-violet-400" />
+                <div className="bg-violet-500/20 p-2 rounded-xl flex items-center justify-center">
+                    <Image src="/icon.svg" alt="NeuroTron Logo" width={24} height={24} />
                 </div>
                 <span className="font-bold text-2xl tracking-tight text-white">NeuroTron</span>
                 <Sparkles className="h-4 w-4 text-violet-400" />

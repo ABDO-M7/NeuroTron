@@ -3,7 +3,7 @@ import './globals.css'
 import { Providers } from '@/components/providers'
 
 export const metadata: Metadata = {
-  title: 'EdTech Platform',
+  title: 'NeuroTron',
   description: 'Interactive learning and AI-powered exam grading',
 }
 

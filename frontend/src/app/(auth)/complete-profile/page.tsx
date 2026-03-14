@@ -10,6 +10,8 @@ import { Label } from "@/components/ui/label"
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card"
 import { BookOpen, User, Phone, GraduationCap, Layers } from "lucide-react"
 
+import Image from "next/image"
+
 const LEVELS = ["1st Year", "2nd Year", "3rd Year", "4th Year", "Graduate", "Postgraduate"]
 
 function CompleteProfileForm() {
@@ -69,8 +71,8 @@ function CompleteProfileForm() {
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-violet-500/8 blur-[120px] rounded-full pointer-events-none" />
 
             <div className="flex items-center gap-2 mb-8 relative">
-                <div className="bg-violet-500/20 p-2 rounded-xl">
-                    <BookOpen className="h-6 w-6 text-violet-400" />
+                <div className="bg-violet-500/20 p-2 rounded-xl flex items-center justify-center">
+                    <Image src="/icon.svg" alt="NeuroTron Logo" width={24} height={24} />
                 </div>
                 <span className="font-bold text-2xl tracking-tight text-white">NeuroTron</span>
             </div>

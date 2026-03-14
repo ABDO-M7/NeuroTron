@@ -4,6 +4,7 @@ import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useAuthStore } from "@/lib/auth"
 import { Button } from "@/components/ui/button"
+import Image from "next/image"
 import { LogOut, BookOpen, Sparkles } from "lucide-react"
 
 export function Navbar() {
@@ -21,11 +22,10 @@ export function Navbar() {
                 <div className="flex justify-between h-16 items-center">
                     <div className="flex-shrink-0 flex items-center">
                         <Link href="/" className="flex items-center gap-2 group">
-                            <div className="bg-green-500/20 p-1.5 rounded-lg group-hover:bg-green-500/30 transition-colors">
-                                <BookOpen className="h-5 w-5 text-green-400" />
+                            <div className="bg-violet-500/20 p-1.5 rounded-lg group-hover:bg-violet-500/30 transition-colors flex items-center justify-center">
+                                <Image src="/icon.svg" alt="NeuroTron Logo" width={20} height={20} />
                             </div>
-                            <span className="font-bold text-xl tracking-tight text-white">EduLearn</span>
-                            <Sparkles className="h-3 w-3 text-green-400 opacity-50" />
+                            <span className="font-bold text-xl tracking-tight text-white">NeuroTron</span>
                         </Link>
                     </div>
 
