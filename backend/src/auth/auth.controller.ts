@@ -17,10 +17,10 @@ export class AuthController {
     @Get('google/callback')
     @UseGuards(AuthGuard('google'))
     async googleCallback(@Req() req: any, @Res() res: Response) {
-        const { accessToken, user } = req.user;
+        const { accessToken } = req.user;
         const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
-        const redirectPath = user.profileComplete ? '/student/dashboard' : '/complete-profile';
-        res.redirect(`${frontendUrl}${redirectPath}?token=${accessToken}`);
+        // Always land on /login — it handles routing based on profileComplete & role
+        res.redirect(`${frontendUrl}/login?token=${accessToken}`);
     }
 
     // ─── GitHub OAuth ──────────────────────────────────────────────────────────
@@ -31,10 +31,10 @@ export class AuthController {
     @Get('github/callback')
     @UseGuards(AuthGuard('github'))
     async githubCallback(@Req() req: any, @Res() res: Response) {
-        const { accessToken, user } = req.user;
+        const { accessToken } = req.user;
         const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
-        const redirectPath = user.profileComplete ? '/student/dashboard' : '/complete-profile';
-        res.redirect(`${frontendUrl}${redirectPath}?token=${accessToken}`);
+        // Always land on /login — it handles routing based on profileComplete & role
+        res.redirect(`${frontendUrl}/login?token=${accessToken}`);
     }
 
     // ─── Profile Completion ────────────────────────────────────────────────────

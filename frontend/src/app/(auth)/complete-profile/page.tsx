@@ -56,9 +56,15 @@ function CompleteProfileForm() {
             const res = await api.post("/auth/complete-profile", form)
             const { user: updatedUser, accessToken } = res.data
             login(updatedUser, accessToken)
-            // Send verification email
-            try { await api.post("/auth/send-verification") } catch { }
-            router.replace("/verify-email")
+
+            // Only send verification email if the user's email isn't already verified
+            if (!updatedUser.emailVerified) {
+                try { await api.post("/auth/send-verification") } catch { }
+                router.replace("/verify-email")
+            } else {
+                // OAuth users are pre-verified — go straight to dashboard
+                router.replace(updatedUser.role === "ADMIN" ? "/admin/dashboard" : "/student/dashboard")
+            }
         } catch (err: any) {
             setError(err.response?.data?.message || "Something went wrong")
         } finally {

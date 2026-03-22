@@ -44,9 +44,24 @@ export default function LoginPage() {
         }
     }, [searchParams])
 
-    // Already logged in
+    // Already logged in — check token expiry before redirecting
     useEffect(() => {
         if (isAuthenticated && user && !searchParams.get("token")) {
+            // Check if the stored JWT is expired
+            const storedToken = useAuthStore.getState().token
+            if (storedToken) {
+                try {
+                    const payload = JSON.parse(atob(storedToken.split(".")[1]))
+                    if (payload.exp * 1000 < Date.now()) {
+                        // Token expired — clear state and stay on login page
+                        useAuthStore.getState().logout()
+                        return
+                    }
+                } catch {
+                    useAuthStore.getState().logout()
+                    return
+                }
+            }
             if (!user.profileComplete) {
                 router.replace("/complete-profile")
             } else if (user.role === "ADMIN") {
