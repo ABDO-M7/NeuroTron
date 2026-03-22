@@ -44,16 +44,4 @@ export class AuthController {
         return this.authService.completeProfile(req.user.sub, dto);
     }
 
-    // ─── Email Verification ────────────────────────────────────────────────────
-    @Post('send-verification')
-    @UseGuards(JwtAuthGuard)
-    async sendVerification(@Req() req: any) {
-        return this.authService.sendVerificationEmail(req.user.sub);
-    }
-
-    @Get('verify-email')
-    async verifyEmail(@Req() req: any) {
-        const token = req.query.token as string;
-        return this.authService.verifyEmail(token);
-    }
 }

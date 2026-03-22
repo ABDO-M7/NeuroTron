@@ -56,15 +56,7 @@ function CompleteProfileForm() {
             const res = await api.post("/auth/complete-profile", form)
             const { user: updatedUser, accessToken } = res.data
             login(updatedUser, accessToken)
-
-            // Only send verification email if the user's email isn't already verified
-            if (!updatedUser.emailVerified) {
-                try { await api.post("/auth/send-verification") } catch { }
-                router.replace("/verify-email")
-            } else {
-                // OAuth users are pre-verified — go straight to dashboard
-                router.replace(updatedUser.role === "ADMIN" ? "/admin/dashboard" : "/student/dashboard")
-            }
+            router.replace(updatedUser.role === "ADMIN" ? "/admin/dashboard" : "/student/dashboard")
         } catch (err: any) {
             setError(err.response?.data?.message || "Something went wrong")
         } finally {
@@ -112,8 +104,13 @@ function CompleteProfileForm() {
                             <Label className="text-gray-300 flex items-center gap-2"><Phone className="h-4 w-4" /> Phone Number</Label>
                             <Input
                                 placeholder="+20 1234567890"
+                                type="tel"
                                 value={form.phone}
-                                onChange={e => setForm({ ...form, phone: e.target.value })}
+                                onChange={e => {
+                                    // Allow only digits, +, spaces, hyphens, parentheses
+                                    const val = e.target.value.replace(/[^\d+\s\-().]/g, "")
+                                    setForm({ ...form, phone: val })
+                                }}
                                 required
                             />
                         </div>

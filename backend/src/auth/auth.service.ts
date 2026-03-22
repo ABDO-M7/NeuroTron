@@ -74,26 +74,6 @@ export class AuthService {
         return this.buildAuthResponse(user);
     }
 
-    // ─── Email Verification ────────────────────────────────────────────────────
-    async sendVerificationEmail(userId: number) {
-        const user = await this.usersService.findById(userId);
-        if (!user) throw new BadRequestException('User not found');
-        if (user.emailVerified) throw new BadRequestException('Email already verified');
-
-        const token = crypto.randomBytes(32).toString('hex');
-        await this.usersService.setVerifyToken(userId, token);
-        await this.mailService.sendVerificationEmail(user.email, token);
-
-        return { message: 'Verification email sent' };
-    }
-
-    async verifyEmail(token: string) {
-        const user = await this.usersService.findByVerifyToken(token);
-        if (!user) throw new BadRequestException('Invalid or expired token');
-
-        await this.usersService.markEmailVerified(user.id);
-        return { message: 'Email verified successfully' };
-    }
 
     // ─── Helpers ───────────────────────────────────────────────────────────────
     private buildAuthResponse(user: any) {
