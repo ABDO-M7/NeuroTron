@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation"
 import { useAuthStore } from "@/lib/auth"
 import { Button } from "@/components/ui/button"
 import Image from "next/image"
-import { LogOut, BookOpen, Sparkles } from "lucide-react"
+import { LogOut, BookOpen, Sparkles, User as UserIcon } from "lucide-react"
 import { Logo } from "@/components/ui/Logo"
 
 export function Navbar() {
@@ -18,7 +18,7 @@ export function Navbar() {
     }
 
     return (
-        <nav className="border-b border-[#1e1e2e] bg-[#0d0d14]/80 backdrop-blur-xl sticky top-0 z-50">
+        <nav className="border-b border-white/5 bg-[#0d0d14]/40 backdrop-blur-2xl sticky top-0 z-50">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex justify-between h-16 items-center">
                     <div className="flex-shrink-0 flex items-center">
@@ -30,14 +30,27 @@ export function Navbar() {
                         </Link>
                     </div>
 
+                    {/* Main Website Navigation Links */}
+                    <div className="hidden md:flex items-center gap-8">
+                        <Link href="/" className="text-sm font-medium text-gray-300 hover:text-white transition-colors">Home</Link>
+                        <Link href="/courses" className="text-sm font-medium text-gray-300 hover:text-white transition-colors">Courses</Link>
+                        <Link href="/about" className="text-sm font-medium text-gray-300 hover:text-white transition-colors">About</Link>
+                    </div>
+
                     <div className="flex items-center gap-4">
                         {user && (
                             <>
-                                <div className="hidden sm:block text-sm font-medium text-gray-300">
-                                    {user.name}
-                                    <span className="text-xs text-green-400 bg-green-500/10 border border-green-500/20 px-2 py-0.5 rounded-full ml-2">
-                                        {user.role}
-                                    </span>
+                                <div className="flex items-center gap-3">
+                                    <div className="w-8 h-8 rounded-full bg-violet-500/20 flex items-center justify-center overflow-hidden border border-violet-500/30">
+                                        {user.avatar ? (
+                                            <img src={user.avatar} alt={user.name || "Avatar"} className="w-full h-full object-cover" />
+                                        ) : (
+                                            <UserIcon className="w-4 h-4 text-violet-300" />
+                                        )}
+                                    </div>
+                                    <div className="hidden sm:block text-sm font-medium text-gray-300">
+                                        {user.name}
+                                    </div>
                                 </div>
                                 {user.role === 'STUDENT' && (
                                     <Link href="/student/profile">
