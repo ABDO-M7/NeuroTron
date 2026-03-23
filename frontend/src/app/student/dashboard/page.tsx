@@ -56,33 +56,37 @@ export default function StudentDashboard() {
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                 {filtered.map((enr) => (
                     <Link key={enr.id} href={`/student/subjects/${enr.subjectId}`}>
-                        <Card className="hover:border-violet-500/30 hover:shadow-violet-500/5 hover:shadow-xl transition-all cursor-pointer h-full flex flex-col group border-[#1e1e2e] bg-[#0d0d14]/60 backdrop-blur-xl relative overflow-hidden">
-                            <div
-                                className="h-32 w-full bg-cover bg-center rounded-t-xl relative overflow-hidden"
-                                style={{ backgroundImage: `url(${enr.subject.imageUrl || 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=800'})` }}
-                            >
-                                <div className="absolute inset-0 bg-gradient-to-t from-[#0d0d14]/90 to-transparent" />
-                                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 transform group-hover:scale-110">
-                                    <PlayCircle className="w-12 h-12 text-white/80" />
+                        <div className="blob-card rounded-2xl cursor-pointer h-full flex flex-col group transition-all duration-300 hover:-translate-y-1">
+                            <div className="blob" />
+                            <div className="blob-bg rounded-2xl" />
+                            <div className="blob-content flex flex-col rounded-2xl overflow-hidden h-full">
+                                <div
+                                    className="h-32 w-full bg-cover bg-center relative overflow-hidden"
+                                    style={{ backgroundImage: `url(${enr.subject.imageUrl || 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=800'})` }}
+                                >
+                                    <div className="absolute inset-0 bg-gradient-to-t from-[#0d0d14]/90 to-transparent" />
+                                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 transform group-hover:scale-110">
+                                        <PlayCircle className="w-12 h-12 text-white/80" />
+                                    </div>
+                                </div>
+                                <div className="px-5 pt-4 pb-2 flex-1">
+                                    <h3 className="font-bold text-white group-hover:text-violet-400 transition-colors mb-1">{enr.subject.name}</h3>
+                                    <p className="text-gray-400 text-sm line-clamp-2 mt-1">{enr.subject.description}</p>
+                                </div>
+                                <div className="px-5 pt-3 pb-5 border-t border-white/5 mt-2">
+                                    <div className="flex justify-between items-center text-xs text-gray-400 mb-2">
+                                        <span>Progress</span>
+                                        <span>{enr.progress ? Math.round(enr.progress) : 0}%</span>
+                                    </div>
+                                    <div className="w-full bg-[#1e1e2e] rounded-full h-1.5 overflow-hidden">
+                                        <div 
+                                            className="bg-violet-500 h-1.5 rounded-full transition-all duration-1000" 
+                                            style={{ width: `${enr.progress || 0}%` }}
+                                        />
+                                    </div>
                                 </div>
                             </div>
-                            <CardHeader className="pt-4">
-                                <CardTitle className="group-hover:text-violet-400 transition-colors text-white">{enr.subject.name}</CardTitle>
-                                <CardDescription className="line-clamp-2 text-gray-400 mt-1">{enr.subject.description}</CardDescription>
-                            </CardHeader>
-                            <CardContent className="mt-auto pt-4 border-t border-white/5">
-                                <div className="flex justify-between items-center text-xs text-gray-400 mb-2">
-                                    <span>Progress</span>
-                                    <span>{enr.progress ? Math.round(enr.progress) : 0}%</span>
-                                </div>
-                                <div className="w-full bg-[#1e1e2e] rounded-full h-1.5 overflow-hidden">
-                                    <div 
-                                        className="bg-violet-500 h-1.5 rounded-full transition-all duration-1000" 
-                                        style={{ width: `${enr.progress || 0}%` }}
-                                    />
-                                </div>
-                            </CardContent>
-                        </Card>
+                        </div>
                     </Link>
                 ))}
                 {filtered.length === 0 && search === "" && (

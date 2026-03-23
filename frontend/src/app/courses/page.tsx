@@ -71,26 +71,34 @@ export default function CoursesPage() {
                 ) : (
                     <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-200">
                         {filtered.map((subject) => (
-                            <Card key={subject.id} className="border-white/5 bg-white/5 backdrop-blur-xl border border-white/10 hover:border-violet-500/30 hover:bg-white/10 transition-all cursor-pointer flex flex-col group overflow-hidden" onClick={() => handleEnroll(subject.id)}>
-                                <div
-                                    className="h-40 w-full bg-cover bg-center relative transition-transform duration-700 group-hover:scale-105"
-                                    style={{ backgroundImage: `url(${subject.imageUrl || 'https://images.unsplash.com/photo-1516116216624-53e697fedbea?w=800'})` }}
-                                >
-                                    <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0f] via-[#0a0a0f]/40 to-transparent" />
+                            <div
+                                key={subject.id}
+                                onClick={() => handleEnroll(subject.id)}
+                                className="blob-card rounded-2xl cursor-pointer flex flex-col group h-full transition-all duration-300 hover:-translate-y-1"
+                            >
+                                <div className="blob" />
+                                <div className="blob-bg rounded-2xl" />
+                                <div className="blob-content flex flex-col rounded-2xl overflow-hidden">
+                                    <div
+                                        className="h-40 w-full bg-cover bg-center relative transition-transform duration-700 group-hover:scale-105"
+                                        style={{ backgroundImage: `url(${subject.imageUrl || 'https://images.unsplash.com/photo-1516116216624-53e697fedbea?w=800'})` }}
+                                    >
+                                        <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0f] via-[#0a0a0f]/40 to-transparent" />
+                                    </div>
+                                    <div className="px-5 pt-4 pb-2 flex-1">
+                                        <h3 className="text-xl font-bold text-white group-hover:text-violet-300 transition-colors mb-2">{subject.name}</h3>
+                                        <p className="text-gray-400 text-sm line-clamp-2 leading-relaxed">{subject.description}</p>
+                                    </div>
+                                    <div className="px-5 pt-3 pb-5 flex items-center justify-between border-t border-white/5 mt-2">
+                                        <div className="text-sm font-medium text-gray-400 group-hover:text-white transition-colors flex items-center gap-2">
+                                            <BookOpen className="w-4 h-4" /> Start Learning
+                                        </div>
+                                        <div className="w-8 h-8 rounded-full bg-violet-500/20 flex items-center justify-center group-hover:bg-violet-500 transition-colors">
+                                            <svg className="w-4 h-4 text-white translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
+                                        </div>
+                                    </div>
                                 </div>
-                                <CardHeader className="pt-2 z-10 -mt-2">
-                                    <CardTitle className="text-xl text-white group-hover:text-violet-300 transition-colors">{subject.name}</CardTitle>
-                                    <CardDescription className="line-clamp-2 text-gray-400 mt-2 leading-relaxed">{subject.description}</CardDescription>
-                                </CardHeader>
-                                <CardContent className="mt-auto pt-4 flex items-center justify-between border-t border-white/5">
-                                    <div className="text-sm font-medium text-gray-400 group-hover:text-white transition-colors flex items-center gap-2">
-                                        <BookOpen className="w-4 h-4" /> Start Learning
-                                    </div>
-                                    <div className="w-8 h-8 rounded-full bg-violet-500/20 flex items-center justify-center group-hover:bg-violet-500 transition-colors">
-                                        <svg className="w-4 h-4 text-white translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
-                                    </div>
-                                </CardContent>
-                            </Card>
+                            </div>
                         ))}
                     </div>
                 )}
