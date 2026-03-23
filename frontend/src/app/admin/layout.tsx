@@ -1,6 +1,5 @@
 "use client"
 
-import { Navbar } from "@/components/layout/Navbar"
 import { withAuth } from "@/components/providers"
 import Link from "next/link"
 import { LayoutDashboard, BookOpen, BarChart3 } from "lucide-react"
@@ -12,7 +11,6 @@ function AdminLayout({
 }) {
     return (
         <div className="min-h-screen bg-[#0a0a0f]">
-            <Navbar />
             <div className="max-w-7xl mx-auto flex py-6 sm:px-6 lg:px-8">
                 <aside className="w-64 flex-shrink-0 border-r border-[#1e1e2e] pr-6 hidden md:block">
                     <nav className="space-y-1">
