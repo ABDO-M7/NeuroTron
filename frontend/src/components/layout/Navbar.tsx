@@ -29,17 +29,7 @@ export function Navbar() {
     const [showNotif, setShowNotif] = useState(false)
     const [unread, setUnread] = useState(0)
 
-    // Hide on landing/auth pages
-    if (HIDDEN_ON.some(p => pathname === p || pathname.startsWith(p + "?"))) return null
-
-    const homeHref = user
-        ? user.role === "ADMIN" ? "/admin/dashboard" : "/student/dashboard"
-        : "/"
-
-    const resolvedLinks = NAV_LINKS.map(link =>
-        link.href === "/" ? { ...link, href: homeHref } : link
-    )
-
+    // Must be called BEFORE any conditional return (React rules of hooks)
     useEffect(() => {
         const fetchNotifications = async () => {
             try {
@@ -50,6 +40,17 @@ export function Navbar() {
         }
         if (user) fetchNotifications()
     }, [user])
+
+    // Hide on landing/auth pages (AFTER all hooks)
+    if (HIDDEN_ON.some(p => pathname === p || pathname.startsWith(p + "?"))) return null
+
+    const homeHref = user
+        ? user.role === "ADMIN" ? "/admin/dashboard" : "/student/dashboard"
+        : "/"
+
+    const resolvedLinks = NAV_LINKS.map(link =>
+        link.href === "/" ? { ...link, href: homeHref } : link
+    )
 
     const handleLogout = () => {
         logout()
