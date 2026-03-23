@@ -79,8 +79,10 @@ button {
 }
 
 /* ──────────────────────────────────────────
-   Liquid Glass Navbar
+   Liquid Glass Navbar (floating pill)
 ────────────────────────────────────────── */
+/* No longer needed as a class — styles are inline in Navbar.tsx */
+/* Keeping stub for any legacy references */
 .navbar-glass {
   background: rgba(8, 8, 18, 0.45);
   backdrop-filter: saturate(180%) blur(28px);
@@ -90,6 +92,11 @@ button {
     0 1px 0 0 rgba(255,255,255,0.04) inset,
     0 8px 32px rgba(0, 0, 0, 0.4),
     0 2px 8px rgba(82, 39, 255, 0.08);
+}
+
+/* Landing / auth pages: no top padding (navbar is hidden there) */
+.no-navbar-padding {
+  padding-top: 0;
 }
 
 /* ──────────────────────────────────────────

@@ -10,7 +10,7 @@ function AdminLayout({
     children: React.ReactNode
 }) {
     return (
-        <div className="min-h-screen bg-[#0a0a0f]">
+        <div className="min-h-screen bg-[#0a0a0f] pt-20">
             <div className="max-w-7xl mx-auto flex py-6 sm:px-6 lg:px-8">
                 <aside className="w-64 flex-shrink-0 border-r border-[#1e1e2e] pr-6 hidden md:block">
                     <nav className="space-y-1">
