@@ -7,26 +7,21 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/com
 import { BookOpen, Award, Clock } from "lucide-react"
 
 export default function StudentDashboard() {
-    const [stats, setStats] = useState<any>(null)
     const [subjects, setSubjects] = useState<any[]>([])
     const [loading, setLoading] = useState(true)
 
     useEffect(() => {
-        const fetchData = async () => {
+        const fetchSubjects = async () => {
             try {
-                const [statsRes, subjectsRes] = await Promise.all([
-                    api.get("/users/me/stats"),
-                    api.get("/subjects")
-                ])
-                setStats(statsRes.data)
-                setSubjects(subjectsRes.data)
+                const res = await api.get("/subjects")
+                setSubjects(res.data)
             } catch (err) {
                 console.error(err)
             } finally {
                 setLoading(false)
             }
         }
-        fetchData()
+        fetchSubjects()
     }, [])
 
     if (loading) return (
@@ -36,33 +31,11 @@ export default function StudentDashboard() {
         </div>
     )
 
-    const statCards = [
-        { title: "Exams Taken", value: stats?.totalAttempts || 0, icon: Clock, color: "text-green-400", bg: "bg-green-500/10" },
-        { title: "Completed", value: stats?.completedAttempts || 0, icon: BookOpen, color: "text-emerald-400", bg: "bg-emerald-500/10" },
-        { title: "Average Score", value: `${stats?.averageScore || 0}%`, icon: Award, color: "text-teal-400", bg: "bg-teal-500/10" },
-    ]
-
     return (
-        <div className="space-y-8">
+        <div className="space-y-8 animate-in fade-in duration-500">
             <div>
-                <h1 className="text-3xl font-bold tracking-tight text-white">My Dashboard</h1>
-                <p className="text-gray-400 mt-2">Welcome back! Track your progress and continue learning.</p>
-            </div>
-
-            <div className="grid gap-4 md:grid-cols-3">
-                {statCards.map((stat) => (
-                    <Card key={stat.title} className="hover:border-green-500/20 transition-colors">
-                        <CardHeader className="flex flex-row items-center justify-between pb-2">
-                            <CardTitle className="text-sm font-medium text-gray-400">{stat.title}</CardTitle>
-                            <div className={`p-2 rounded-lg ${stat.bg}`}>
-                                <stat.icon className={`h-4 w-4 ${stat.color}`} />
-                            </div>
-                        </CardHeader>
-                        <CardContent>
-                            <div className="text-3xl font-bold text-white">{stat.value}</div>
-                        </CardContent>
-                    </Card>
-                ))}
+                <h1 className="text-3xl font-bold tracking-tight text-white">Student Dashboard</h1>
+                <p className="text-gray-400 mt-2">Welcome back! Check out the available subjects below to continue your journey.</p>
             </div>
 
             <div>
@@ -70,7 +43,7 @@ export default function StudentDashboard() {
                 <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                     {subjects.map((subject) => (
                         <Link key={subject.id} href={`/student/subjects/${subject.id}`}>
-                            <Card className="hover:border-green-500/30 hover:shadow-green-500/5 hover:shadow-xl transition-all cursor-pointer h-full flex flex-col group">
+                            <Card className="hover:border-green-500/30 hover:shadow-green-500/5 hover:shadow-xl transition-all cursor-pointer h-full flex flex-col group border-[#1e1e2e] bg-[#12121a]/80 backdrop-blur-xl">
                                 <div
                                     className="h-32 w-full bg-cover bg-center rounded-t-xl relative overflow-hidden"
                                     style={{ backgroundImage: `url(${subject.imageUrl || 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=800'})` }}
@@ -78,8 +51,8 @@ export default function StudentDashboard() {
                                     <div className="absolute inset-0 bg-gradient-to-t from-[#12121a] to-transparent" />
                                 </div>
                                 <CardHeader>
-                                    <CardTitle className="group-hover:text-green-400 transition-colors">{subject.name}</CardTitle>
-                                    <CardDescription className="line-clamp-2">{subject.description}</CardDescription>
+                                    <CardTitle className="group-hover:text-green-400 transition-colors text-white">{subject.name}</CardTitle>
+                                    <CardDescription className="line-clamp-2 text-gray-400">{subject.description}</CardDescription>
                                 </CardHeader>
                                 <CardContent className="mt-auto pt-0 text-sm text-gray-500 flex gap-4">
                                     <span className="flex items-center gap-1"><BookOpen className="h-4 w-4" /> {subject._count?.lessons || 0} Lessons</span>

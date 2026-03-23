@@ -70,6 +70,18 @@ export class UsersService {
         });
     }
 
+    async updateUserDetails(userId: number, data: {
+        name?: string;
+        level?: string;
+        specialization?: string;
+        avatar?: string;
+    }) {
+        return this.prisma.user.update({
+            where: { id: userId },
+            data,
+        });
+    }
+
     async setVerifyToken(userId: number, token: string) {
         return this.prisma.user.update({
             where: { id: userId },
