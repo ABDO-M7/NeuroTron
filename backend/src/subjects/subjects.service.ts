@@ -41,4 +41,19 @@ export class SubjectsService {
         await this.findOne(id);
         return this.prisma.subject.delete({ where: { id } });
     }
+
+    async enrollStudent(subjectId: number, userId: number) {
+        // check if subject exists
+        await this.findOne(subjectId);
+        
+        // check if already enrolled
+        const existing = await this.prisma.enrollment.findUnique({
+            where: { userId_subjectId: { userId, subjectId } }
+        });
+        if (existing) return existing;
+
+        return this.prisma.enrollment.create({
+            data: { userId, subjectId }
+        });
+    }
 }

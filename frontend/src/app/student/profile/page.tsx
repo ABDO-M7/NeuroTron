@@ -11,6 +11,14 @@ import { useAuthStore } from "@/lib/auth"
 
 const LEVELS = ["1st Year", "2nd Year", "3rd Year", "4th Year", "Graduate", "Postgraduate"]
 
+const PREDEFINED_SPECS = [
+    "Computing and data science",
+    "Cyber security",
+    "Intelligent Systems",
+    "Business Analytics",
+    "Healthcare Informatics"
+]
+
 export default function StudentProfile() {
     const { user, login, token } = useAuthStore()
     const [stats, setStats] = useState<any>(null)
@@ -23,6 +31,7 @@ export default function StudentProfile() {
         avatar: "" 
     })
     const [isSaving, setIsSaving] = useState(false)
+    const [isOtherSpec, setIsOtherSpec] = useState(false)
     const fileInputRef = useRef<HTMLInputElement>(null)
 
     useEffect(() => {
@@ -39,6 +48,9 @@ export default function StudentProfile() {
                     specialization: profile.specialization || "",
                     avatar: profile.avatar || ""
                 })
+                if (profile.specialization && !PREDEFINED_SPECS.includes(profile.specialization)) {
+                    setIsOtherSpec(true);
+                }
                 setStats(statsRes.data)
                 
                 // update store if needed
@@ -177,11 +189,35 @@ export default function StudentProfile() {
                                 <div className="space-y-2">
                                     <Label className="text-gray-400">Specialization</Label>
                                     {isEditing ? (
-                                        <Input 
-                                            value={form.specialization} 
-                                            onChange={(e) => setForm({...form, specialization: e.target.value})} 
-                                            className="bg-[#1a1a2e] border-[#2a2a3a]" 
-                                        />
+                                        <>
+                                            <select
+                                                value={isOtherSpec ? "Other" : form.specialization}
+                                                onChange={e => {
+                                                    const val = e.target.value;
+                                                    if (val === "Other") {
+                                                        setIsOtherSpec(true);
+                                                        setForm({ ...form, specialization: "" });
+                                                    } else {
+                                                        setIsOtherSpec(false);
+                                                        setForm({ ...form, specialization: val });
+                                                    }
+                                                }}
+                                                className="w-full px-3 py-2 rounded-lg border border-[#2a2a3a] bg-[#1a1a2e] text-white focus:outline-none focus:ring-2 focus:ring-violet-500/50"
+                                            >
+                                                <option value="" disabled>Select specialization...</option>
+                                                {PREDEFINED_SPECS.map(s => <option key={s} value={s}>{s}</option>)}
+                                                <option value="Other">Other (Please specify)</option>
+                                            </select>
+                                            
+                                            {isOtherSpec && (
+                                                <Input 
+                                                    placeholder="Type your specialization"
+                                                    value={form.specialization} 
+                                                    onChange={(e) => setForm({...form, specialization: e.target.value})} 
+                                                    className="bg-[#1a1a2e] border-[#2a2a3a] mt-2" 
+                                                />
+                                            )}
+                                        </>
                                     ) : (
                                         <div className="text-lg font-medium text-white">{form.specialization || "N/A"}</div>
                                     )}

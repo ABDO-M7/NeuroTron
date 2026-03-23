@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Put, Delete, Body, Param, ParseIntPipe, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Body, Param, ParseIntPipe, UseGuards, Request } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
@@ -25,6 +25,12 @@ export class SubjectsController {
     @Roles('ADMIN')
     create(@Body() dto: CreateSubjectDto) {
         return this.subjectsService.create(dto);
+    }
+
+    @Post(':id/enroll')
+    @UseGuards(AuthGuard('jwt'))
+    enroll(@Param('id', ParseIntPipe) id: number, @Request() req: any) {
+        return this.subjectsService.enrollStudent(id, req.user.id);
     }
 
     @Put(':id')

@@ -4,69 +4,102 @@ import { useEffect, useState } from "react"
 import Link from "next/link"
 import { api } from "@/lib/api"
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card"
-import { BookOpen, Award, Clock } from "lucide-react"
+import { BookOpen, Search, PlayCircle } from "lucide-react"
 
 export default function StudentDashboard() {
-    const [subjects, setSubjects] = useState<any[]>([])
+    const [enrollments, setEnrollments] = useState<any[]>([])
+    const [search, setSearch] = useState("")
     const [loading, setLoading] = useState(true)
 
     useEffect(() => {
-        const fetchSubjects = async () => {
+        const fetchEnrollments = async () => {
             try {
-                const res = await api.get("/subjects")
-                setSubjects(res.data)
+                const res = await api.get("/users/me/enrollments")
+                setEnrollments(res.data || [])
             } catch (err) {
                 console.error(err)
             } finally {
                 setLoading(false)
             }
         }
-        fetchSubjects()
+        fetchEnrollments()
     }, [])
+
+    const filtered = enrollments.filter(e => e.subject?.name.toLowerCase().includes(search.toLowerCase()))
 
     if (loading) return (
         <div className="p-8 text-center text-gray-500 flex flex-col items-center justify-center min-h-[60vh]">
-            <div className="w-8 h-8 border-4 border-green-500 border-t-transparent rounded-full animate-spin mb-4"></div>
-            Loading dashboard...
+            <div className="w-8 h-8 border-4 border-violet-500 border-t-transparent rounded-full animate-spin mb-4"></div>
+            Loading your dashboard...
         </div>
     )
 
     return (
-        <div className="space-y-8 animate-in fade-in duration-500">
-            <div>
-                <h1 className="text-3xl font-bold tracking-tight text-white">Student Dashboard</h1>
-                <p className="text-gray-400 mt-2">Welcome back! Check out the available subjects below to continue your journey.</p>
+        <div className="space-y-8 animate-in fade-in duration-500 max-w-7xl mx-auto px-4 py-8">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div>
+                    <h1 className="text-3xl font-bold tracking-tight text-white mb-2">My Progress</h1>
+                    <p className="text-gray-400">Jump back into your active courses.</p>
+                </div>
+                <div className="relative w-full md:w-72">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 h-4 w-4" />
+                    <input 
+                        type="text" 
+                        placeholder="Search your courses..." 
+                        value={search}
+                        onChange={e => setSearch(e.target.value)}
+                        className="w-full bg-[#12121a] border border-[#2a2a3a] text-white rounded-lg pl-10 pr-4 py-2 focus:outline-none focus:border-violet-500/50 focus:ring-1 focus:ring-violet-500/50 transition-all"
+                    />
+                </div>
             </div>
 
-            <div>
-                <h2 className="text-2xl font-bold tracking-tight text-white mb-4">Available Subjects</h2>
-                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                    {subjects.map((subject) => (
-                        <Link key={subject.id} href={`/student/subjects/${subject.id}`}>
-                            <Card className="hover:border-green-500/30 hover:shadow-green-500/5 hover:shadow-xl transition-all cursor-pointer h-full flex flex-col group border-[#1e1e2e] bg-[#12121a]/80 backdrop-blur-xl">
-                                <div
-                                    className="h-32 w-full bg-cover bg-center rounded-t-xl relative overflow-hidden"
-                                    style={{ backgroundImage: `url(${subject.imageUrl || 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=800'})` }}
-                                >
-                                    <div className="absolute inset-0 bg-gradient-to-t from-[#12121a] to-transparent" />
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                {filtered.map((enr) => (
+                    <Link key={enr.id} href={`/student/subjects/${enr.subjectId}`}>
+                        <Card className="hover:border-violet-500/30 hover:shadow-violet-500/5 hover:shadow-xl transition-all cursor-pointer h-full flex flex-col group border-[#1e1e2e] bg-[#0d0d14]/60 backdrop-blur-xl relative overflow-hidden">
+                            <div
+                                className="h-32 w-full bg-cover bg-center rounded-t-xl relative overflow-hidden"
+                                style={{ backgroundImage: `url(${enr.subject.imageUrl || 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=800'})` }}
+                            >
+                                <div className="absolute inset-0 bg-gradient-to-t from-[#0d0d14]/90 to-transparent" />
+                                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 transform group-hover:scale-110">
+                                    <PlayCircle className="w-12 h-12 text-white/80" />
                                 </div>
-                                <CardHeader>
-                                    <CardTitle className="group-hover:text-green-400 transition-colors text-white">{subject.name}</CardTitle>
-                                    <CardDescription className="line-clamp-2 text-gray-400">{subject.description}</CardDescription>
-                                </CardHeader>
-                                <CardContent className="mt-auto pt-0 text-sm text-gray-500 flex gap-4">
-                                    <span className="flex items-center gap-1"><BookOpen className="h-4 w-4" /> {subject._count?.lessons || 0} Lessons</span>
-                                    <span className="flex items-center gap-1"><Award className="h-4 w-4" /> {subject._count?.exams || 0} Exams</span>
-                                </CardContent>
-                            </Card>
+                            </div>
+                            <CardHeader className="pt-4">
+                                <CardTitle className="group-hover:text-violet-400 transition-colors text-white">{enr.subject.name}</CardTitle>
+                                <CardDescription className="line-clamp-2 text-gray-400 mt-1">{enr.subject.description}</CardDescription>
+                            </CardHeader>
+                            <CardContent className="mt-auto pt-4 border-t border-white/5">
+                                <div className="flex justify-between items-center text-xs text-gray-400 mb-2">
+                                    <span>Progress</span>
+                                    <span>{enr.progress ? Math.round(enr.progress) : 0}%</span>
+                                </div>
+                                <div className="w-full bg-[#1e1e2e] rounded-full h-1.5 overflow-hidden">
+                                    <div 
+                                        className="bg-violet-500 h-1.5 rounded-full transition-all duration-1000" 
+                                        style={{ width: `${enr.progress || 0}%` }}
+                                    />
+                                </div>
+                            </CardContent>
+                        </Card>
+                    </Link>
+                ))}
+                {filtered.length === 0 && search === "" && (
+                    <div className="col-span-3 text-center p-12 bg-[#0d0d14]/40 border border-white/5 rounded-2xl backdrop-blur-md">
+                        <BookOpen className="w-12 h-12 text-gray-500 mx-auto mb-4 opacity-50" />
+                        <h3 className="text-xl font-bold text-white mb-2">No Active Courses</h3>
+                        <p className="text-gray-400 mb-6">You haven't started any courses yet. Explore our library to begin learning.</p>
+                        <Link href="/courses" className="px-6 py-2.5 bg-violet-600 hover:bg-violet-700 text-white font-medium rounded-lg transition-colors">
+                            Browse Courses
                         </Link>
-                    ))}
-                    {subjects.length === 0 && (
-                        <div className="col-span-3 text-center p-8 bg-[#12121a] border border-[#1e1e2e] rounded-xl text-gray-500">
-                            No subjects available yet. Check back later.
-                        </div>
-                    )}
-                </div>
+                    </div>
+                )}
+                {filtered.length === 0 && search !== "" && (
+                    <div className="col-span-3 text-center p-8 text-gray-500">
+                        No active courses match your search.
+                    </div>
+                )}
             </div>
         </div>
     )

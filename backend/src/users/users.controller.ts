@@ -49,6 +49,11 @@ export class UsersController {
         return this.usersService.getStudentStats(req.user.id);
     }
 
+    @Get('me/enrollments')
+    async getMyEnrollments(@Request() req: any) {
+        return this.usersService.getEnrollments(req.user.id);
+    }
+
     @Get()
     @UseGuards(RolesGuard)
     @Roles('ADMIN')

@@ -9,6 +9,7 @@ import { LessonsModule } from './lessons/lessons.module';
 import { ExamsModule } from './exams/exams.module';
 import { AttemptsModule } from './attempts/attempts.module';
 import { AiGradingModule } from './ai-grading/ai-grading.module';
+import { FeedbackModule } from './feedback/feedback.module';
 
 @Module({
     imports: [
@@ -24,6 +25,7 @@ import { AiGradingModule } from './ai-grading/ai-grading.module';
         ExamsModule,
         AttemptsModule,
         AiGradingModule,
+        FeedbackModule,
     ],
     providers: [
         {

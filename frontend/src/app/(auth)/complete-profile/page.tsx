@@ -22,6 +22,15 @@ function CompleteProfileForm() {
     const [form, setForm] = useState({ username: "", phone: "", level: "", specialization: "" })
     const [error, setError] = useState("")
     const [isLoading, setIsLoading] = useState(false)
+    const [isOtherSpec, setIsOtherSpec] = useState(false)
+
+    const PREDEFINED_SPECS = [
+        "Computing and data science",
+        "Cyber security",
+        "Intelligent Systems",
+        "Business Analytics",
+        "Healthcare Informatics"
+    ]
 
     // If arriving from OAuth redirect with ?token=xxx, store it first
     useEffect(() => {
@@ -130,12 +139,35 @@ function CompleteProfileForm() {
 
                         <div className="space-y-2">
                             <Label className="text-gray-300 flex items-center gap-2"><Layers className="h-4 w-4" /> Specialization</Label>
-                            <Input
-                                placeholder="e.g. Computer Science, Medicine..."
-                                value={form.specialization}
-                                onChange={e => setForm({ ...form, specialization: e.target.value })}
-                                required
-                            />
+                            <select
+                                value={isOtherSpec ? "Other" : form.specialization}
+                                onChange={e => {
+                                    const val = e.target.value;
+                                    if (val === "Other") {
+                                        setIsOtherSpec(true);
+                                        setForm({ ...form, specialization: "" });
+                                    } else {
+                                        setIsOtherSpec(false);
+                                        setForm({ ...form, specialization: val });
+                                    }
+                                }}
+                                className="w-full px-3 py-2 rounded-lg border border-[#2a2a3a] bg-[#1a1a2e] text-gray-300 focus:outline-none focus:ring-2 focus:ring-violet-500/50"
+                                required={!isOtherSpec}
+                            >
+                                <option value="" disabled>Select specialization...</option>
+                                {PREDEFINED_SPECS.map(s => <option key={s} value={s}>{s}</option>)}
+                                <option value="Other">Other (Please specify)</option>
+                            </select>
+
+                            {isOtherSpec && (
+                                <Input
+                                    placeholder="Type your specialization"
+                                    value={form.specialization}
+                                    onChange={e => setForm({ ...form, specialization: e.target.value })}
+                                    className="mt-2"
+                                    required
+                                />
+                            )}
                         </div>
 
                         <Button

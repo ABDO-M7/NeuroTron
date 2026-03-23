@@ -102,6 +102,14 @@ export class UsersService {
         });
     }
 
+    async getEnrollments(userId: number) {
+        return this.prisma.enrollment.findMany({
+            where: { userId },
+            include: { subject: true },
+            orderBy: { updatedAt: 'desc' },
+        });
+    }
+
     async getStudentStats(userId: number) {
         const attempts = await this.prisma.attempt.findMany({
             where: { userId },

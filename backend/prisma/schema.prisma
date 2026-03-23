@@ -40,6 +40,8 @@ model User {
   createdAt         DateTime  @default(now())
   updatedAt         DateTime  @updatedAt
   attempts          Attempt[]
+  enrollments       Enrollment[]
+  feedbacks         Feedback[]
 
   @@map("users")
 }
@@ -53,6 +55,7 @@ model Subject {
   updatedAt   DateTime  @updatedAt
   lessons     Lesson[]
   exams       Exam[]
+  enrollments Enrollment[]
 
   @@map("subjects")
 }
@@ -137,4 +140,29 @@ model Answer {
   question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
 
   @@map("answers")
+}
+
+model Enrollment {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  subjectId Int
+  progress  Float    @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  subject   Subject  @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, subjectId])
+  @@map("enrollments")
+}
+
+model Feedback {
+  id        Int      @id @default(autoincrement())
+  userId    Int?
+  message   String
+  rating    Int
+  createdAt DateTime @default(now())
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@map("feedbacks")
 }
