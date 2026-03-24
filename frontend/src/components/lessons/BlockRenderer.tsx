@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useRef, useEffect } from "react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { LiveCodeBlock } from "./LiveCodeBlock"
@@ -21,6 +21,21 @@ function AdvancedBadge() {
 export function BlockRenderer({ block }: { block: any }) {
     const { type, content } = block
     const isAdvanced = content?.isAdvanced
+    const textRef = useRef<HTMLDivElement>(null)
+
+    useEffect(() => {
+        if (type === 'paragraph' && textRef.current) {
+            import('katex').then((katex) => {
+                const formulas = textRef.current!.querySelectorAll('.ql-formula')
+                formulas.forEach(el => {
+                    const formula = el.getAttribute('data-value')
+                    if (formula) {
+                        try { katex.default.render(formula, el as HTMLElement, { throwOnError: false }) } catch (e) { }
+                    }
+                })
+            })
+        }
+    }, [content?.text, type])
 
     switch (type) {
         case 'paragraph':
@@ -28,6 +43,7 @@ export function BlockRenderer({ block }: { block: any }) {
                 <div className="my-6">
                     {isAdvanced && <AdvancedBadge />}
                     <div
+                        ref={textRef}
                         className="prose prose-blue max-w-none text-gray-700 leading-relaxed text-lg [&_h1]:text-3xl [&_h2]:text-2xl [&_h3]:text-xl"
                         dangerouslySetInnerHTML={{ __html: content.text }}
                     />

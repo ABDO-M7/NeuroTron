@@ -7,13 +7,21 @@ import { api } from "@/lib/api"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { ArrowLeft, Save, Trash2, GripVertical, Image as ImageIcon, HelpCircle, Terminal, Code, AlignLeft, EyeOff, Play, Plus } from "lucide-react"
+import { ArrowLeft, Save, Trash2, GripVertical, Image as ImageIcon, HelpCircle, Terminal, Code, AlignLeft, EyeOff, Play, Plus, FolderOpen } from "lucide-react"
 import dynamic from 'next/dynamic'
 import 'react-quill/dist/quill.snow.css'
 
-// ── Dynamic imports ──────────────────────────────────────────────────────────
+import 'katex/dist/katex.min.css'
+
 const ReactQuill = dynamic(async () => {
-    const { default: RQ } = await import('react-quill')
+    const { default: RQ, Quill } = await import('react-quill')
+    const katexConfig = await import('katex')
+    ;(window as any).katex = katexConfig.default
+
+    const Size = Quill.import('attributors/style/size')
+    Size.whitelist = ['10px', '12px', '14px', '16px', '18px', '20px', '24px', '28px', '32px']
+    Quill.register(Size, true)
+
     return function Comp({ forwardedRef, ...props }: any) {
         return <RQ ref={forwardedRef} {...props} />
     }
@@ -43,10 +51,26 @@ const QUILL_DARK_CSS = `
 // ── Inline Block Preview (mirrors student view) ───────────────────────────────
 function BlockPreview({ block }: { block: any }) {
     const { type, content } = block
+    const textRef = useRef<HTMLDivElement>(null)
+
+    useEffect(() => {
+        if (type === 'paragraph' && textRef.current) {
+            import('katex').then((katex) => {
+                const formulas = textRef.current!.querySelectorAll('.ql-formula')
+                formulas.forEach(el => {
+                    const formula = el.getAttribute('data-value')
+                    if (formula) {
+                        try { katex.default.render(formula, el as HTMLElement, { throwOnError: false }) } catch (e) { }
+                    }
+                })
+            })
+        }
+    }, [content?.text, type])
 
     if (type === 'paragraph') {
         return (
             <div
+                ref={textRef}
                 className="prose prose-invert max-w-none text-gray-200 leading-relaxed p-1
                     [&_h1]:text-3xl [&_h2]:text-2xl [&_h3]:text-xl
                     [&_strong]:text-white [&_em]:text-gray-300
@@ -118,6 +142,18 @@ function BlockPreview({ block }: { block: any }) {
         )
     }
 
+    if (type === 'section') {
+        return (
+            <div className="w-full mt-4 px-5 py-3 border border-indigo-500/30 rounded-xl bg-indigo-900/10 flex items-center gap-3">
+                <FolderOpen className="w-5 h-5 text-indigo-400" />
+                <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-violet-400 to-indigo-400">
+                    {content.title || 'Section'}
+                </span>
+                <span className="ml-auto text-xs text-indigo-400/50 uppercase tracking-widest font-semibold">Group Start</span>
+            </div>
+        )
+    }
+
     return <p className="text-gray-500 italic text-sm">{type} — preview shown for students only.</p>
 }
 
@@ -142,11 +178,12 @@ function RichTextEditor({ value, onChange }: { value: string, onChange: (val: st
     const quillModules = {
         toolbar: [
             [{ header: [1, 2, 3, false] }],
+            [{ size: ['10px', '12px', '14px', '16px', '18px', '20px', '24px', '28px', '32px'] }],
             ['bold', 'italic', 'underline', 'strike'],
             [{ list: 'ordered' }, { list: 'bullet' }],
             [{ color: [] }, { background: [] }],
             [{ align: [] }],
-            ['link', 'clean']
+            ['formula', 'link', 'clean']
         ]
     }
 
@@ -229,7 +266,8 @@ function EditorContent() {
     const addBlock = (type: string) => {
         const newBlock: any = { id: Math.random().toString(), type, content: { isAdvanced: false } }
         if (type === 'paragraph') newBlock.content = { text: '', isAdvanced: false }
-        if (type === 'image') newBlock.content = { url: '', alt: '', isAdvanced: false }
+        if (type === 'section') newBlock.content = { title: 'New Layout Section', isAdvanced: false }
+        if (type === 'image') newBlock.content = { urls: [], alt: '', isAdvanced: false }
         if (type === 'code') newBlock.content = { code: '', language: 'javascript', isAdvanced: false }
         if (type === 'code-execution') newBlock.content = { code: 'console.log("Hello, World!");', isAdvanced: false }
         if (type === 'html-sandbox') newBlock.content = { html: '<h1>Hello World</h1>', isAdvanced: false }
@@ -501,6 +539,21 @@ function EditorContent() {
                                                     </div>
                                                 </div>
                                             )}
+                                            {block.type === 'section' && (
+                                                <div className="space-y-3 p-4 bg-indigo-900/10 border border-indigo-500/20 rounded-xl">
+                                                    <div className="flex items-center gap-2 mb-2 text-indigo-400 font-semibold text-sm uppercase tracking-wider">
+                                                        <FolderOpen className="w-4 h-4" />
+                                                        Collapsible Section Header
+                                                    </div>
+                                                    <Input 
+                                                        value={block.content.title}
+                                                        onChange={e => updateBlock(block.id, { ...block.content, title: e.target.value })}
+                                                        className="bg-[#0f0f1a] border-white/10 text-xl font-bold text-gray-200 placeholder:text-gray-600 h-14"
+                                                        placeholder="Type section title here..."
+                                                    />
+                                                    <p className="text-xs text-gray-500">All blocks placed below this section will be grouped inside it.</p>
+                                                </div>
+                                            )}
                                         </>
                                     )}
                                 </CardContent>
@@ -514,6 +567,7 @@ function EditorContent() {
                     <div className="bg-[#0f0f1a] border border-white/10 shadow-xl rounded-full px-2 py-1.5 flex gap-0.5 flex-wrap justify-center">
                         {[
                             { type: 'paragraph', icon: <AlignLeft className="w-3.5 h-3.5" />, label: 'Text' },
+                            { type: 'section', icon: <FolderOpen className="w-3.5 h-3.5" />, label: 'Section' },
                             { type: 'code', icon: <Code className="w-3.5 h-3.5" />, label: 'Code' },
                             { type: 'image', icon: <ImageIcon className="w-3.5 h-3.5" />, label: 'Image' },
                             { type: 'code-execution', icon: <Terminal className="w-3.5 h-3.5" />, label: 'JS Sandbox' },
