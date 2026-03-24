@@ -11,21 +11,8 @@ const Orb = dynamic(() => import("@/components/Orb"), { ssr: false })
 export default function HomePage() {
     return (
         <main className="relative min-h-screen bg-black overflow-hidden flex flex-col">
-            {/* ─── Full-page fluid WebGL background ─────────────────────── */}
-            <div className="absolute inset-0 z-0 overflow-hidden">
-                <div style={{ width: '100%', height: '100%', position: 'absolute' }}>
-                    <Orb
-                        hoverIntensity={2}
-                        rotateOnHover
-                        hue={0}
-                        forceHoverState={false}
-                        backgroundColor="#000000"
-                    />
-                </div>
-            </div>
-
             {/* ─── Subtle overlay to keep text readable ─────────────────── */}
-            <div className="absolute inset-0 z-10 bg-black/30" />
+            <div className="absolute inset-0 z-[5] bg-black/30 pointer-events-none" />
 
             {/* ─── Top navbar ───────────────────────────────────────────── */}
             <nav className="relative z-20 flex items-center justify-between px-8 py-6">
@@ -65,6 +52,26 @@ export default function HomePage() {
 
             {/* ─── Hero content ─────────────────────────────────────────── */}
             <section className="relative z-20 flex-1 flex flex-col items-center justify-center text-center px-4">
+                {/* Orb surrounds the content */}
+                <div className="absolute" style={{
+                    width: '700px',
+                    height: '700px',
+                    maxWidth: '95vw',
+                    maxHeight: '95vw',
+                    pointerEvents: 'none',
+                    zIndex: 0,
+                }}>
+                    <Orb
+                        hoverIntensity={2}
+                        rotateOnHover
+                        hue={0}
+                        forceHoverState={false}
+                        backgroundColor="#000000"
+                    />
+                </div>
+
+                {/* Content floats above the Orb */}
+                <div className="relative z-10 flex flex-col items-center">
                 {/* Badge */}
                 <div
                     className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-semibold uppercase tracking-widest mb-8"
@@ -154,6 +161,7 @@ export default function HomePage() {
                 </div>
 
 
+                </div>
             </section>
 
             {/* ─── Bottom gradient fade ──────────────────────────────────── */}
