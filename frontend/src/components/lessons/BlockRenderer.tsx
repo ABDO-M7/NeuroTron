@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from "react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { LiveCodeBlock } from "./LiveCodeBlock"
+import 'katex/dist/katex.min.css'
 import { HtmlSandboxBlock } from "./HtmlSandboxBlock"
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism'
