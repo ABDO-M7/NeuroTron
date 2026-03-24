@@ -7,18 +7,24 @@ import { api } from "@/lib/api"
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Button } from "@/components/ui/button"
-import { ArrowLeft, BookOpen, FileText, Plus, Trash2, Edit2 } from "lucide-react"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { ArrowLeft, BookOpen, FileText, Plus, Trash2, Edit2, Save, X } from "lucide-react"
 
 export default function AdminSubjectDetailsPage() {
     const params = useParams()
     const id = params?.id
     const [subject, setSubject] = useState<any>(null)
     const [loading, setLoading] = useState(true)
+    const [editMode, setEditMode] = useState(false)
+    const [editForm, setEditForm] = useState({ name: '', description: '', imageUrl: '' })
+    const [saving, setSaving] = useState(false)
 
     const fetchSubject = async () => {
         try {
             const res = await api.get(`/subjects/${id}`)
             setSubject(res.data)
+            setEditForm({ name: res.data.name, description: res.data.description || '', imageUrl: res.data.imageUrl || '' })
         } catch (err) {
             console.error(err)
         } finally {
@@ -29,6 +35,19 @@ export default function AdminSubjectDetailsPage() {
     useEffect(() => {
         if (id) fetchSubject()
     }, [id])
+
+    const handleSaveInfo = async () => {
+        setSaving(true)
+        try {
+            await api.put(`/subjects/${id}`, editForm)
+            await fetchSubject()
+            setEditMode(false)
+        } catch (err) {
+            alert("Failed to update subject info")
+        } finally {
+            setSaving(false)
+        }
+    }
 
     const handleDeleteLesson = async (lessonId: number) => {
         if (!confirm('Are you sure you want to delete this lesson?')) return
@@ -55,11 +74,60 @@ export default function AdminSubjectDetailsPage() {
                 <ArrowLeft className="h-4 w-4 mr-1" /> Back to Subjects
             </Link>
 
-            <div className="flex justify-between items-end border-b pb-4">
-                <div>
-                    <h1 className="text-3xl font-bold tracking-tight">{subject.name}</h1>
-                    <p className="text-muted-foreground mt-1 max-w-2xl">{subject.description}</p>
-                </div>
+            {/* ── Header with Edit Toggle ── */}
+            <div className="flex justify-between items-start border-b pb-4">
+                {!editMode ? (
+                    <>
+                        <div>
+                            <h1 className="text-3xl font-bold tracking-tight">{subject.name}</h1>
+                            <p className="text-muted-foreground mt-1 max-w-2xl">{subject.description}</p>
+                        </div>
+                        <Button variant="outline" size="sm" onClick={() => setEditMode(true)}>
+                            <Edit2 className="w-4 h-4 mr-2" /> Edit Course Info
+                        </Button>
+                    </>
+                ) : (
+                    <div className="w-full space-y-4 bg-blue-50/40 border border-blue-100 rounded-xl p-5">
+                        <div className="flex items-center justify-between mb-2">
+                            <h2 className="font-semibold text-gray-800">Edit Course Info</h2>
+                            <Button variant="ghost" size="icon" onClick={() => setEditMode(false)} className="h-8 w-8">
+                                <X className="w-4 h-4" />
+                            </Button>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                                <Label>Course Name</Label>
+                                <Input
+                                    value={editForm.name}
+                                    onChange={e => setEditForm({ ...editForm, name: e.target.value })}
+                                    placeholder="Course name"
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <Label>Cover Image URL</Label>
+                                <Input
+                                    value={editForm.imageUrl}
+                                    onChange={e => setEditForm({ ...editForm, imageUrl: e.target.value })}
+                                    placeholder="https://..."
+                                />
+                            </div>
+                            <div className="space-y-2 md:col-span-2">
+                                <Label>Description</Label>
+                                <Input
+                                    value={editForm.description}
+                                    onChange={e => setEditForm({ ...editForm, description: e.target.value })}
+                                    placeholder="Short course description..."
+                                />
+                            </div>
+                        </div>
+                        <div className="flex gap-2 pt-2">
+                            <Button onClick={handleSaveInfo} disabled={saving}>
+                                <Save className="w-4 h-4 mr-2" /> {saving ? 'Saving...' : 'Save Changes'}
+                            </Button>
+                            <Button variant="ghost" onClick={() => setEditMode(false)}>Cancel</Button>
+                        </div>
+                    </div>
+                )}
             </div>
 
             <Tabs defaultValue="lessons" className="w-full">
@@ -143,3 +211,4 @@ export default function AdminSubjectDetailsPage() {
         </div>
     )
 }
+

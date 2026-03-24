@@ -7,7 +7,12 @@ import { api } from "@/lib/api"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { ArrowLeft, Save, Plus, Trash2, GripVertical, Image as ImageIcon, Type, BarChart, HelpCircle, Terminal, Code } from "lucide-react"
+import { ArrowLeft, Save, Plus, Trash2, GripVertical, Image as ImageIcon, Type, BarChart, HelpCircle, Terminal, Code, AlignLeft } from "lucide-react"
+import dynamic from 'next/dynamic'
+import 'react-quill/dist/quill.snow.css'
+
+// Dynamic import for ReactQuill to avoid SSR issues
+const ReactQuill = dynamic(() => import('react-quill'), { ssr: false, loading: () => <div className="h-32 bg-gray-50 rounded-md border animate-pulse" /> })
 
 function EditorContent() {
     const searchParams = useSearchParams()
@@ -55,13 +60,13 @@ function EditorContent() {
     }
 
     const addBlock = (type: string) => {
-        const newBlock = { id: Math.random().toString(), type, content: {} }
-        if (type === 'paragraph') newBlock.content = { text: '' }
-        if (type === 'image') newBlock.content = { url: '', alt: '' }
-
-        if (type === 'code-execution') newBlock.content = { code: 'console.log("Hello, World!");\n\n// Try changing learning rate or creating loops\nlet learningRate = 0.01;\nconsole.log("Learning Rate is:", learningRate);' }
-        if (type === 'html-sandbox') newBlock.content = { html: '<h1>Hello World</h1>\n<style>\n  h1 { color: blue; }\n</style>\n<script>\n  console.log("Running JS inside HTML sandbox");\n</script>' }
-        if (type === 'quiz') newBlock.content = { question: '', options: ['', '', '', ''], correctIndex: 0 }
+        const newBlock: any = { id: Math.random().toString(), type, content: { isAdvanced: false } }
+        if (type === 'paragraph') newBlock.content = { text: '', isAdvanced: false }
+        if (type === 'image') newBlock.content = { url: '', alt: '', isAdvanced: false }
+        if (type === 'code') newBlock.content = { code: '', language: 'javascript', isAdvanced: false }
+        if (type === 'code-execution') newBlock.content = { code: 'console.log("Hello, World!");', isAdvanced: false }
+        if (type === 'html-sandbox') newBlock.content = { html: '<h1>Hello World</h1>', isAdvanced: false }
+        if (type === 'quiz') newBlock.content = { question: '', options: ['', '', '', ''], correctIndex: 0, isAdvanced: false }
 
         setBlocks([...blocks, newBlock])
     }
@@ -87,8 +92,19 @@ function EditorContent() {
 
     if (loading) return <div className="p-8 text-center text-gray-500">Loading editor...</div>
 
+    // React Quill toolbar config
+    const quillModules = {
+        toolbar: [
+            [{ 'header': [1, 2, 3, false] }],
+            ['bold', 'italic', 'underline', 'strike'],
+            [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+            [{ 'color': [] }, { 'background': [] }],
+            ['link', 'clean']
+        ]
+    }
+
     return (
-        <div className="max-w-4xl mx-auto space-y-6 pb-24">
+        <div className="max-w-4xl mx-auto space-y-6 pb-32">
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
                     <Link href={`/admin/subjects/${subjectId}`}>
@@ -117,21 +133,41 @@ function EditorContent() {
 
                         <CardContent className="p-6">
                             <div className="flex justify-between items-start mb-4">
-                                <div className="px-2 py-1 bg-gray-100 text-xs font-semibold text-gray-500 uppercase rounded tracking-wider">
+                                <div className="px-2 py-1 bg-gray-100 text-[11px] font-bold text-gray-600 uppercase rounded tracking-wider">
                                     {block.type.replace('-', ' ')}
                                 </div>
-                                <Button variant="ghost" size="icon" className="text-red-400 hover:text-red-600 hover:bg-red-50" onClick={() => removeBlock(block.id)}>
-                                    <Trash2 className="w-4 h-4" />
-                                </Button>
+                                <div className="flex items-center gap-4">
+                                    {/* Advanced Toggle */}
+                                    <label className="flex items-center gap-2 cursor-pointer group/toggle">
+                                        <div className="relative">
+                                            <input 
+                                                type="checkbox" 
+                                                className="sr-only"
+                                                checked={!!block.content.isAdvanced}
+                                                onChange={(e) => updateBlock(block.id, { ...block.content, isAdvanced: e.target.checked })}
+                                            />
+                                            <div className={`w-8 h-4 rounded-full transition-colors ${block.content.isAdvanced ? 'bg-violet-500' : 'bg-gray-300'}`}></div>
+                                            <div className={`absolute left-0.5 top-0.5 bg-white w-3 h-3 rounded-full transition-transform ${block.content.isAdvanced ? 'translate-x-4' : ''}`}></div>
+                                        </div>
+                                        <span className="text-sm font-medium text-gray-600 group-hover/toggle:text-gray-900">Advanced Content</span>
+                                    </label>
+                                    <div className="h-4 w-px bg-gray-200" />
+                                    <Button variant="ghost" size="icon" className="text-red-400 hover:text-red-600 hover:bg-red-50 -my-2" onClick={() => removeBlock(block.id)}>
+                                        <Trash2 className="w-4 h-4" />
+                                    </Button>
+                                </div>
                             </div>
 
                             {block.type === 'paragraph' && (
-                                <textarea
-                                    className="w-full min-h-[120px] p-3 text-gray-700 bg-gray-50 border rounded-md focus:ring-blue-500 focus:border-blue-500 resize-y"
-                                    placeholder="Enter lesson text here..."
-                                    value={block.content.text}
-                                    onChange={e => updateBlock(block.id, { ...block.content, text: e.target.value })}
-                                />
+                                <div className="prose-editor">
+                                    <ReactQuill 
+                                        theme="snow" 
+                                        value={block.content.text} 
+                                        onChange={(val) => updateBlock(block.id, { ...block.content, text: val })}
+                                        modules={quillModules}
+                                        className="bg-white"
+                                    />
+                                </div>
                             )}
 
                             {block.type === 'image' && (
@@ -151,6 +187,34 @@ function EditorContent() {
                                             <img src={block.content.url} alt="Preview" className="max-h-48 object-contain" onError={(e: any) => e.target.style.display = 'none'} />
                                         </div>
                                     )}
+                                </div>
+                            )}
+
+                            {block.type === 'code' && (
+                                <div className="space-y-3">
+                                    <div className="flex items-center gap-2">
+                                        <Code className="w-4 h-4 text-gray-500" />
+                                        <select 
+                                            value={block.content.language || 'javascript'}
+                                            onChange={e => updateBlock(block.id, { ...block.content, language: e.target.value })}
+                                            className="text-sm border-gray-300 rounded-md focus:ring-violet-500 focus:border-violet-500"
+                                        >
+                                            <option value="javascript">JavaScript</option>
+                                            <option value="python">Python</option>
+                                            <option value="typescript">TypeScript</option>
+                                            <option value="html">HTML</option>
+                                            <option value="css">CSS</option>
+                                            <option value="cpp">C++</option>
+                                            <option value="java">Java</option>
+                                        </select>
+                                    </div>
+                                    <textarea
+                                        className="w-full h-48 p-4 text-gray-200 bg-[#1e1e1e] font-mono text-sm border-none rounded-md focus:ring-2 focus:ring-violet-500 resize-y"
+                                        placeholder={`Enter ${block.content.language || 'code'} here...`}
+                                        value={block.content.code || ''}
+                                        spellCheck="false"
+                                        onChange={e => updateBlock(block.id, { ...block.content, code: e.target.value })}
+                                    />
                                 </div>
                             )}
 
@@ -221,14 +285,16 @@ function EditorContent() {
                 ))}
 
                 <div className="pt-6 flex justify-center">
-                    <div className="bg-white border shadow-sm rounded-full p-1.5 flex gap-1">
+                    <div className="bg-white border shadow-sm rounded-full p-1.5 flex gap-1 flex-wrap justify-center">
                         <Button variant="ghost" size="sm" className="rounded-full text-gray-600" onClick={() => addBlock('paragraph')}>
-                            <Type className="w-4 h-4 mr-2" /> Text
+                            <AlignLeft className="w-4 h-4 mr-2" /> Text (Rich)
+                        </Button>
+                        <Button variant="ghost" size="sm" className="rounded-full text-gray-600" onClick={() => addBlock('code')}>
+                            <Code className="w-4 h-4 mr-2" /> Code Snippet
                         </Button>
                         <Button variant="ghost" size="sm" className="rounded-full text-gray-600" onClick={() => addBlock('image')}>
                             <ImageIcon className="w-4 h-4 mr-2" /> Image
                         </Button>
-
                         <Button variant="ghost" size="sm" className="rounded-full text-gray-600" onClick={() => addBlock('code-execution')}>
                             <Terminal className="w-4 h-4 mr-2" /> JS Sandbox
                         </Button>

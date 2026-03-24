@@ -5,36 +5,101 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { LiveCodeBlock } from "./LiveCodeBlock"
 import { HtmlSandboxBlock } from "./HtmlSandboxBlock"
+import dynamic from "next/dynamic"
+
+// Dynamically import syntax highlighter to avoid SSR issues
+const SyntaxHighlighter = dynamic(
+    () => import("react-syntax-highlighter").then(mod => mod.Prism),
+    { ssr: false, loading: () => <pre className="bg-[#1e1e1e] p-4 rounded-lg animate-pulse h-24" /> }
+)
+const { vscDarkPlus } = require("react-syntax-highlighter/dist/cjs/styles/prism")
+
+function AdvancedBadge() {
+    return (
+        <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold tracking-wider uppercase mb-3
+            bg-violet-500/10 text-violet-600 border border-violet-300/30">
+            <span className="w-1.5 h-1.5 rounded-full bg-violet-500 animate-pulse" />
+            Advanced Content
+        </div>
+    )
+}
 
 export function BlockRenderer({ block }: { block: any }) {
     const { type, content } = block
+    const isAdvanced = content?.isAdvanced
 
     switch (type) {
         case 'paragraph':
             return (
-                <div className="prose prose-blue max-w-none my-6">
-                    <p className="text-gray-700 leading-relaxed text-lg">{content.text}</p>
+                <div className="my-6">
+                    {isAdvanced && <AdvancedBadge />}
+                    <div
+                        className="prose prose-blue max-w-none text-gray-700 leading-relaxed text-lg [&_h1]:text-3xl [&_h2]:text-2xl [&_h3]:text-xl"
+                        dangerouslySetInnerHTML={{ __html: content.text }}
+                    />
                 </div>
             )
 
         case 'image':
             return (
-                <figure className="my-8 rounded-xl overflow-hidden border bg-gray-50">
-                    <img src={content.url} alt={content.alt || 'Lesson visual'} className="w-full max-h-[500px] object-contain" />
-                    {content.alt && <figcaption className="p-3 text-center text-sm text-gray-500 bg-white border-t">{content.alt}</figcaption>}
-                </figure>
+                <div className="my-6">
+                    {isAdvanced && <AdvancedBadge />}
+                    <figure className="rounded-xl overflow-hidden border bg-gray-50">
+                        <img src={content.url} alt={content.alt || 'Lesson visual'} className="w-full max-h-[500px] object-contain" />
+                        {content.alt && <figcaption className="p-3 text-center text-sm text-gray-500 bg-white border-t">{content.alt}</figcaption>}
+                    </figure>
+                </div>
             )
 
-
+        case 'code':
+            return (
+                <div className="my-6">
+                    {isAdvanced && <AdvancedBadge />}
+                    <div className="rounded-xl overflow-hidden border border-white/10 shadow-lg">
+                        {/* Header bar */}
+                        <div className="flex items-center gap-2 px-4 py-2 bg-[#2d2d2d] border-b border-white/10">
+                            <div className="flex gap-1.5">
+                                <span className="w-3 h-3 rounded-full bg-red-500/70" />
+                                <span className="w-3 h-3 rounded-full bg-yellow-500/70" />
+                                <span className="w-3 h-3 rounded-full bg-green-500/70" />
+                            </div>
+                            <span className="text-xs text-gray-400 font-mono ml-2">{content.language || 'code'}</span>
+                        </div>
+                        <SyntaxHighlighter
+                            language={content.language || 'javascript'}
+                            style={vscDarkPlus}
+                            customStyle={{ margin: 0, borderRadius: 0, fontSize: '0.875rem', background: '#1e1e1e' }}
+                            showLineNumbers
+                        >
+                            {content.code || ''}
+                        </SyntaxHighlighter>
+                    </div>
+                </div>
+            )
 
         case 'code-execution':
-            return <LiveCodeBlock defaultCode={content.code} />
+            return (
+                <div className="my-6">
+                    {isAdvanced && <AdvancedBadge />}
+                    <LiveCodeBlock defaultCode={content.code} />
+                </div>
+            )
 
         case 'html-sandbox':
-            return <HtmlSandboxBlock defaultHtml={content.html} />
+            return (
+                <div className="my-6">
+                    {isAdvanced && <AdvancedBadge />}
+                    <HtmlSandboxBlock defaultHtml={content.html} />
+                </div>
+            )
 
         case 'quiz':
-            return <MiniQuiz content={content} />
+            return (
+                <div className="my-6">
+                    {isAdvanced && <AdvancedBadge />}
+                    <MiniQuiz content={content} />
+                </div>
+            )
 
         default:
             return <div className="p-4 border border-dashed text-gray-400 bg-gray-50 rounded-lg my-4">Unsupported block type: {type}</div>
