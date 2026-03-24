@@ -154,3 +154,16 @@ button {
   width: 100%;
   height: 100%;
 }
+
+/* ──────────────────────────────────────────
+   Quill Rich Text Utilities (for Student View / Preview)
+────────────────────────────────────────── */
+.ql-align-center {
+  text-align: center;
+}
+.ql-align-right {
+  text-align: right;
+}
+.ql-align-justify {
+  text-align: justify;
+}
