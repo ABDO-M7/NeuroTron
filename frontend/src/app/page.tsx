@@ -38,9 +38,8 @@ export default function HomePage() {
             {/* ─── Top navbar ───────────────────────────────────────────── */}
             <nav className="relative z-20 flex items-center justify-between px-8 py-6">
                 <div className="flex items-center gap-2">
-                    <div className="p-2 rounded-xl"
-                        style={{ background: "rgba(57,12,237,0.3)", border: "1px solid rgba(57,12,237,0.5)", backdropFilter: "blur(12px)" }}>
-                        <Image src="/icon.svg?v=2" alt="NeuroTron Logo" width={24} height={24} unoptimized />
+                    <div className="flex items-center justify-center">
+                        <Image src="/icon.svg?v=2" alt="NeuroTron Logo" width={32} height={32} unoptimized />
                     </div>
                     <Logo className="text-xl tracking-tight" />
                 </div>
