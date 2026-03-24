@@ -17,12 +17,8 @@ const ReactQuill = dynamic(() => import('react-quill'), {
     loading: () => <div className="h-36 bg-[#1a1a2e] rounded-lg border border-white/10 animate-pulse" />
 })
 
-const SyntaxHighlighter = dynamic(
-    () => import("react-syntax-highlighter").then(mod => mod.Prism as any),
-    { ssr: false, loading: () => <pre className="bg-[#1e1e1e] p-4 rounded-lg animate-pulse h-24" /> }
-)
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-const { vscDarkPlus } = require("react-syntax-highlighter/dist/cjs/styles/prism")
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
+import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism'
 
 // ── Dark Quill CSS ────────────────────────────────────────────────────────────
 const QUILL_DARK_CSS = `

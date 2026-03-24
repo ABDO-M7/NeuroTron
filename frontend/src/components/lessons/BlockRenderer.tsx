@@ -5,14 +5,8 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { LiveCodeBlock } from "./LiveCodeBlock"
 import { HtmlSandboxBlock } from "./HtmlSandboxBlock"
-import dynamic from "next/dynamic"
-
-// Dynamically import syntax highlighter to avoid SSR issues
-const SyntaxHighlighter = dynamic(
-    () => import("react-syntax-highlighter").then(mod => mod.Prism),
-    { ssr: false, loading: () => <pre className="bg-[#1e1e1e] p-4 rounded-lg animate-pulse h-24" /> }
-)
-const { vscDarkPlus } = require("react-syntax-highlighter/dist/cjs/styles/prism")
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
+import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism'
 
 function AdvancedBadge() {
     return (
