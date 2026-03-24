@@ -14,13 +14,18 @@ import 'react-quill/dist/quill.snow.css'
 import 'katex/dist/katex.min.css'
 
 const ReactQuill = dynamic(async () => {
-    const { default: RQ, Quill } = await import('react-quill')
+    const m = await import('react-quill')
+    const RQ = m.default
+    const Quill = m.Quill || (RQ as any).Quill || (window as any).Quill
+    
+    if (Quill) {
+        const Size = Quill.import('attributors/style/size')
+        Size.whitelist = ['10px', '12px', '14px', '16px', '18px', '20px', '24px', '28px', '32px']
+        Quill.register(Size, true)
+    }
+
     const katexConfig = await import('katex')
     ;(window as any).katex = katexConfig.default
-
-    const Size = Quill.import('attributors/style/size')
-    Size.whitelist = ['10px', '12px', '14px', '16px', '18px', '20px', '24px', '28px', '32px']
-    Quill.register(Size, true)
 
     return function Comp({ forwardedRef, ...props }: any) {
         return <RQ ref={forwardedRef} {...props} />
