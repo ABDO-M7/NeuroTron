@@ -5,31 +5,23 @@ import Link from "next/link"
 import Image from "next/image"
 import { Logo } from "@/components/ui/Logo"
 
-// Loaded client-side only — WebGL doesn't work on SSR
-const LiquidEther = dynamic(() => import("@/components/LiquidEther"), { ssr: false })
+// Loaded client-side only
+const Orb = dynamic(() => import("@/components/Orb"), { ssr: false })
 
 export default function HomePage() {
     return (
         <main className="relative min-h-screen bg-black overflow-hidden flex flex-col">
             {/* ─── Full-page fluid WebGL background ─────────────────────── */}
-            <div className="absolute inset-0 z-0">
-                <LiquidEther
-                    colors={["#5227FF", "#FF9FFC", "#B19EEF"]}
-                    mouseForce={20}
-                    cursorSize={100}
-                    isViscous
-                    viscous={30}
-                    iterationsViscous={32}
-                    iterationsPoisson={32}
-                    resolution={0.5}
-                    isBounce={false}
-                    autoDemo
-                    autoSpeed={0.5}
-                    autoIntensity={2.2}
-                    takeoverDuration={0.25}
-                    autoResumeDelay={3000}
-                    autoRampDuration={0.6}
-                />
+            <div className="absolute inset-0 z-0 overflow-hidden">
+                <div style={{ width: '100%', height: '100%', position: 'absolute' }}>
+                    <Orb
+                        hoverIntensity={2}
+                        rotateOnHover
+                        hue={0}
+                        forceHoverState={false}
+                        backgroundColor="#000000"
+                    />
+                </div>
             </div>
 
             {/* ─── Subtle overlay to keep text readable ─────────────────── */}
@@ -109,7 +101,7 @@ export default function HomePage() {
                     className="text-base md:text-lg font-light max-w-xl mb-12"
                     style={{ color: "rgba(247,235,249,0.5)" }}
                 >
-                    Master subjects, ace exams, and get instant AI-powered feedback — all in one place.
+                    stop studying, start learning
                 </p>
 
                 {/* CTA Buttons */}
@@ -161,19 +153,7 @@ export default function HomePage() {
                     </Link>
                 </div>
 
-                {/* Stats row */}
-                <div className="flex gap-12 mt-20">
-                    {[
-                        { label: "Subjects", value: "50+" },
-                        { label: "Students", value: "10K+" },
-                        { label: "Exams Graded", value: "200K+" },
-                    ].map((stat) => (
-                        <div key={stat.label} className="text-center">
-                            <div className="text-3xl font-black" style={{ color: "#f7ebf9" }}>{stat.value}</div>
-                            <div className="text-sm mt-1" style={{ color: "rgba(247,235,249,0.5)" }}>{stat.label}</div>
-                        </div>
-                    ))}
-                </div>
+
             </section>
 
             {/* ─── Bottom gradient fade ──────────────────────────────────── */}
