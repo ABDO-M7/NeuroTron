@@ -120,7 +120,7 @@ export default function StudentProfile() {
     const bentoCards = [
         {
             color: '#060010',
-            label: '📝 Exams Taken',
+            label: 'Exams Taken',
             title: `${total}`,
             description: total === 0 ? "No exams yet — dive in!" : total === 1 ? "You've started your journey!" : `${total} attempts recorded`,
         },
