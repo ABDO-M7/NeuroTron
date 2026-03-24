@@ -7,7 +7,7 @@ import { api } from "@/lib/api"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { ArrowLeft, Save, Trash2, GripVertical, Image as ImageIcon, HelpCircle, Terminal, Code, AlignLeft, EyeOff, Play } from "lucide-react"
+import { ArrowLeft, Save, Trash2, GripVertical, Image as ImageIcon, HelpCircle, Terminal, Code, AlignLeft, EyeOff, Play, Plus } from "lucide-react"
 import dynamic from 'next/dynamic'
 import 'react-quill/dist/quill.snow.css'
 
@@ -59,10 +59,20 @@ function BlockPreview({ block }: { block: any }) {
     }
 
     if (type === 'image') {
-        return content.url
-            ? <img src={content.url} alt={content.alt || ''} className="max-h-64 rounded-lg object-contain"
-                onError={(e: any) => { e.target.style.display = 'none' }} />
-            : <p className="text-gray-500 italic text-sm">No image URL set yet.</p>
+        const images = Array.isArray(content.images) 
+            ? content.images 
+            : (content.url ? [{ url: content.url, alt: content.alt || '' }] : []);
+            
+        if (images.length === 0) return <p className="text-gray-500 italic text-sm">No images set yet.</p>
+
+        return (
+            <div className="flex flex-col gap-4">
+                {images.map((img: any, i: number) => img.url && (
+                    <img key={i} src={img.url} alt={img.alt || ''} className="max-h-64 rounded-lg object-contain"
+                        onError={(e: any) => { e.target.style.display = 'none' }} />
+                ))}
+            </div>
+        )
     }
 
     if (type === 'code') {
@@ -135,6 +145,7 @@ function RichTextEditor({ value, onChange }: { value: string, onChange: (val: st
             ['bold', 'italic', 'underline', 'strike'],
             [{ list: 'ordered' }, { list: 'bullet' }],
             [{ color: [] }, { background: [] }],
+            [{ align: [] }],
             ['link', 'clean']
         ]
     }
@@ -344,43 +355,81 @@ function EditorContent() {
                                                 />
                                             )}
 
-                                            {block.type === 'image' && (
-                                                <div className="space-y-3">
-                                                    <div className="flex gap-2">
-                                                        <Input placeholder="Image URL (or upload)" value={block.content.url}
-                                                            onChange={e => updateBlock(block.id, { ...block.content, url: e.target.value })}
-                                                            className="bg-[#0f0f1a] border-white/10 text-gray-200 placeholder:text-gray-600" />
+                                            {block.type === 'image' && (() => {
+                                                const images = Array.isArray(block.content.images) 
+                                                    ? block.content.images 
+                                                    : (block.content.url ? [{ url: block.content.url, alt: block.content.alt || '' }] : [{ url: '', alt: '' }]);
+                                            
+                                                const updateImages = (newImages: any[]) => updateBlock(block.id, { ...block.content, images: newImages, url: undefined, alt: undefined });
+                                            
+                                                return (
+                                                    <div className="space-y-4">
+                                                        {images.map((img: any, i: number) => (
+                                                            <div key={i} className="space-y-3 p-4 border border-white/5 bg-black/10 rounded-xl relative group">
+                                                                {images.length > 1 && (
+                                                                    <Button variant="ghost" size="icon" className="absolute top-2 right-2 h-6 w-6 text-red-500/50 hover:text-red-400 opacity-0 group-hover:opacity-100" onClick={() => {
+                                                                        const newImgs = [...images];
+                                                                        newImgs.splice(i, 1);
+                                                                        updateImages(newImgs);
+                                                                    }}>
+                                                                        <Trash2 className="w-3 h-3" />
+                                                                    </Button>
+                                                                )}
+                                                                
+                                                                <div className="flex gap-2 pr-6">
+                                                                    <Input placeholder="Image URL (or upload)" value={img.url}
+                                                                        onChange={e => {
+                                                                            const newImgs = [...images];
+                                                                            newImgs[i].url = e.target.value;
+                                                                            updateImages(newImgs);
+                                                                        }}
+                                                                        className="bg-[#0f0f1a] border-white/10 text-gray-200 placeholder:text-gray-600" />
+                                                                    
+                                                                    <div className="relative shrink-0">
+                                                                        <input 
+                                                                            type="file" 
+                                                                            accept="image/*" 
+                                                                            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                                                                            onChange={(e) => {
+                                                                                const file = e.target.files?.[0];
+                                                                                if (file) {
+                                                                                    const reader = new FileReader();
+                                                                                    reader.onload = () => {
+                                                                                        const newImgs = [...images];
+                                                                                        newImgs[i].url = reader.result;
+                                                                                        updateImages(newImgs);
+                                                                                    };
+                                                                                    reader.readAsDataURL(file);
+                                                                                }
+                                                                            }}
+                                                                        />
+                                                                        <Button type="button" variant="secondary" className="bg-[#1a1a2e] hover:bg-[#2a2a4e] text-indigo-300 border border-indigo-500/30">
+                                                                            Upload Image
+                                                                        </Button>
+                                                                    </div>
+                                                                </div>
+                                                                <Input placeholder="Alt text (optional)" value={img.alt || ''}
+                                                                    onChange={e => {
+                                                                        const newImgs = [...images];
+                                                                        newImgs[i].alt = e.target.value;
+                                                                        updateImages(newImgs);
+                                                                    }}
+                                                                    className="bg-[#0f0f1a] border-white/10 text-gray-200 placeholder:text-gray-600" />
+                                                                {img.url && (
+                                                                    <div className="rounded-lg border border-white/10 bg-black/20 flex justify-center p-2 mt-2">
+                                                                        <img src={img.url} alt="Preview" className="max-h-[300px] object-contain"
+                                                                            onError={(e: any) => { e.target.style.display = 'none' }} />
+                                                                    </div>
+                                                                )}
+                                                            </div>
+                                                        ))}
                                                         
-                                                        <div className="relative shrink-0">
-                                                            <input 
-                                                                type="file" 
-                                                                accept="image/*" 
-                                                                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-                                                                onChange={(e) => {
-                                                                    const file = e.target.files?.[0];
-                                                                    if (file) {
-                                                                        const reader = new FileReader();
-                                                                        reader.onload = () => updateBlock(block.id, { ...block.content, url: reader.result });
-                                                                        reader.readAsDataURL(file);
-                                                                    }
-                                                                }}
-                                                            />
-                                                            <Button type="button" variant="secondary" className="bg-[#1a1a2e] hover:bg-[#2a2a4e] text-indigo-300 border border-indigo-500/30">
-                                                                Upload Image
-                                                            </Button>
-                                                        </div>
+                                                        <Button variant="outline" size="sm" className="w-full border-dashed border-white/20 text-gray-400 hover:text-white bg-transparent" onClick={() => updateImages([...images, { url: '', alt: '' }])}>
+                                                            <Plus className="w-4 h-4 mr-2" /> Add Another Image
+                                                        </Button>
                                                     </div>
-                                                    <Input placeholder="Alt text (optional)" value={block.content.alt}
-                                                        onChange={e => updateBlock(block.id, { ...block.content, alt: e.target.value })}
-                                                        className="bg-[#0f0f1a] border-white/10 text-gray-200 placeholder:text-gray-600" />
-                                                    {block.content.url && (
-                                                        <div className="rounded-lg border border-white/10 bg-black/20 flex justify-center p-2">
-                                                            <img src={block.content.url} alt="Preview" className="max-h-[300px] object-contain"
-                                                                onError={(e: any) => { e.target.style.display = 'none' }} />
-                                                        </div>
-                                                    )}
-                                                </div>
-                                            )}
+                                                )
+                                            })()}
 
                                             {block.type === 'code' && (
                                                 <div className="space-y-3">

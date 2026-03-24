@@ -34,16 +34,27 @@ export function BlockRenderer({ block }: { block: any }) {
                 </div>
             )
 
-        case 'image':
+        case 'image': {
+            const images = Array.isArray(content.images) 
+                ? content.images 
+                : (content.url ? [{ url: content.url, alt: content.alt || '' }] : []);
+
+            if (images.length === 0) return null;
+
             return (
                 <div className="my-6">
                     {isAdvanced && <AdvancedBadge />}
-                    <figure className="rounded-xl overflow-hidden border bg-gray-50">
-                        <img src={content.url} alt={content.alt || 'Lesson visual'} className="w-full max-h-[500px] object-contain" />
-                        {content.alt && <figcaption className="p-3 text-center text-sm text-gray-500 bg-white border-t">{content.alt}</figcaption>}
-                    </figure>
+                    <div className="space-y-6 lg:space-y-8">
+                        {images.map((img: any, i: number) => img.url && (
+                            <figure key={i} className="rounded-xl overflow-hidden border bg-gray-50 shadow-sm">
+                                <img src={img.url} alt={img.alt || 'Lesson visual'} className="w-full max-h-[600px] object-contain bg-white" />
+                                {img.alt && <figcaption className="p-3 text-center text-sm text-gray-500 bg-white border-t">{img.alt}</figcaption>}
+                            </figure>
+                        ))}
+                    </div>
                 </div>
             )
+        }
 
         case 'code':
             return (
