@@ -34,10 +34,10 @@ export class AiGradingService {
         try {
             const prompt = `You are an expert academic grader. Grade the following essay answer on a scale of 0 to 100.
 Consider these criteria:
-- Accuracy and correctness of content (40%)
-- Clarity and organization of writing (25%)
-- Depth of understanding shown (25%)
-- Spelling and grammar (10%)
+- Accuracy and correctness of content (50%)
+- Depth of understanding shown (30%)
+- Clarity and organization of writing (20%)
+
 
 Question: ${question}
 
