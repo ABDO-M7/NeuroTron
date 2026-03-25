@@ -40,8 +40,6 @@ export function BlockRenderer({ block }: { block: any }) {
             // 2. Collapsible Headers Logic
             const headers = textRef.current.querySelectorAll('h1, h2');
             headers.forEach((header: Element) => {
-                if (isAdvanced) return; // Prevent advanced block headers from collapsing
-
                 const el = header as HTMLElement;
                 if (el.hasAttribute('data-collapsible')) return;
                 el.setAttribute('data-collapsible', 'true');
