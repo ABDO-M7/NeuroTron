@@ -159,7 +159,7 @@ Here is the breakdown of their answers:
             }
 
             const response = await this.ai.models.generateContent({
-                model: 'gemini-2.5-pro', // using the pro model for deeper analytical insight
+                model: 'gemini-2.5-flash', // Switched to flash to ensure compatibility/quota
                 contents: prompt,
                 config: {
                     temperature: 0.3,
