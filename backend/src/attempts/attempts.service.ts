@@ -167,6 +167,11 @@ export class AttemptsService {
         // Generate the analysis using Gemini
         const generatedAnalysis = await this.aiGrading.analyzeAttempt(attempt);
 
+        // Don't save if it's the fallback error string
+        if (generatedAnalysis.includes("Analysis Error")) {
+            return { aiAnalysis: generatedAnalysis }; // Return error to show on UI, but don't cache it
+        }
+
         // Save it to the database for future views
         const updated = await this.prisma.attempt.update({
             where: { id: attemptId },
