@@ -67,7 +67,7 @@ export class AttemptsService {
             } else if (question.type === QuestionType.ESSAY) {
                 // AI grade essays
                 try {
-                    const result = await this.aiGrading.gradeEssay(question.text, ans.response || '');
+                    const result = await this.aiGrading.gradeEssay(question.text, ans.response || '', (question as any).imageDesc || undefined);
                     aiScore = result.score;
                     aiFeedback = result.feedback;
                     totalScore += (aiScore / 100) * question.points;

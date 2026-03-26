@@ -9,7 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { ArrowLeft, BookOpen, FileText, Plus, Trash2, Edit2, Save, X } from "lucide-react"
+import { ArrowLeft, BookOpen, FileText, Plus, Trash2, Edit2, Save, X, BarChart2 } from "lucide-react"
 
 export default function AdminSubjectDetailsPage() {
     const params = useParams()
@@ -232,6 +232,9 @@ export default function AdminSubjectDetailsPage() {
                                 <CardContent className="pt-0 flex justify-end gap-2 border-t mt-2 pt-3">
                                     <Link href={`/admin/exams/editor?subjectId=${subject.id}&examId=${exam.id}`}>
                                         <Button variant="outline" size="sm" className="h-8"><Edit2 className="w-3 h-3 mr-1" /> Edit Questions</Button>
+                                    </Link>
+                                    <Link href={`/admin/exams/${exam.id}/stats`}>
+                                        <Button variant="outline" size="sm" className="h-8 text-violet-600 border-violet-200 hover:bg-violet-50"><BarChart2 className="w-3 h-3 mr-1" /> Stats</Button>
                                     </Link>
                                     <Button variant="outline" size="icon" className="h-8 w-8 text-red-500" onClick={() => handleDeleteExam(exam.id)}>
                                         <Trash2 className="w-3 h-3" />

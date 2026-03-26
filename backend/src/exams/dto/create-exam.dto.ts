@@ -14,6 +14,14 @@ export class CreateQuestionDto {
 
     @IsOptional()
     @IsString()
+    imageUrl?: string;
+
+    @IsOptional()
+    @IsString()
+    imageDesc?: string;
+
+    @IsOptional()
+    @IsString()
     correctAnswer?: string;
 
     @IsOptional()

@@ -21,7 +21,7 @@ export class AiGradingService {
         }
     }
 
-    async gradeEssay(question: string, answer: string): Promise<GradingResult> {
+    async gradeEssay(question: string, answer: string, imageDesc?: string): Promise<GradingResult> {
         if (!answer || answer.trim().length === 0) {
             return { score: 0, feedback: 'No answer provided.' };
         }
@@ -32,16 +32,13 @@ export class AiGradingService {
         }
 
         try {
-            const prompt = `You are an expert academic grader. Grade the following essay answer on a scale of 0 to 100.
-Consider these criteria:
-- Accuracy and correctness of content (50%)
-- Depth of understanding shown (30%)
-- Clarity and organization of writing (20%)
+            let prompt = `You are an expert academic grader. Grade the following essay answer on a scale of 0 to 100.\nConsider these criteria:\n- Accuracy and correctness of content (50%)\n- Depth of understanding shown (30%)\n- Clarity and organization of writing (20%)\n\n`;
 
+            if (imageDesc) {
+                prompt += `Visual Context for this Question (the student was shown an image with the following description):\n${imageDesc}\n\n`;
+            }
 
-Question: ${question}
-
-Student's Answer: ${answer}`;
+            prompt += `Question: ${question}\n\nStudent's Answer: ${answer}`;
 
             const responseSchema: Schema = {
                 type: Type.OBJECT,

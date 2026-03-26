@@ -34,6 +34,13 @@ export class ExamsController {
         return this.examsService.getResults(id);
     }
 
+    @Get(':id/stats')
+    @UseGuards(AuthGuard('jwt'), RolesGuard)
+    @Roles('ADMIN')
+    getStats(@Param('id', ParseIntPipe) id: number) {
+        return this.examsService.getStats(id);
+    }
+
     @Post()
     @UseGuards(AuthGuard('jwt'), RolesGuard)
     @Roles('ADMIN')

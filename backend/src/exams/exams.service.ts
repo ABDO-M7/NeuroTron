@@ -44,6 +44,7 @@ export class ExamsService {
                         type: true,
                         text: true,
                         options: true,
+                        imageUrl: true,
                         points: true,
                         order: true,
                     },
@@ -66,6 +67,8 @@ export class ExamsService {
                         text: q.text,
                         options: q.options ?? undefined,
                         correctAnswer: q.correctAnswer,
+                        imageUrl: q.imageUrl,
+                        imageDesc: q.imageDesc,
                         points: q.points || 1,
                         order: q.order ?? index,
                     })) || [],
@@ -93,6 +96,8 @@ export class ExamsService {
                         text: q.text,
                         options: q.options ?? undefined,
                         correctAnswer: q.correctAnswer,
+                        imageUrl: q.imageUrl,
+                        imageDesc: q.imageDesc,
                         points: q.points || 1,
                         order: q.order ?? index,
                     })),
@@ -116,5 +121,34 @@ export class ExamsService {
             },
             orderBy: { submittedAt: 'desc' },
         });
+    }
+
+    async getStats(id: number) {
+        const exam = await this.prisma.exam.findUnique({ where: { id } });
+        if (!exam) throw new NotFoundException('Exam not found');
+
+        const attempts = await this.prisma.attempt.findMany({
+            where: { examId: id },
+            include: {
+                user: { select: { id: true, name: true, email: true, username: true } },
+            },
+            orderBy: { score: 'desc' },
+        });
+
+        const totalAttempts = attempts.length;
+        const uniqueUsers = new Set(attempts.map(a => a.userId)).size;
+        const bestGrade = attempts.length > 0 ? Math.max(...attempts.map(a => a.score || 0)) : 0;
+        const avgGrade = attempts.length > 0 ? attempts.reduce((acc, a) => acc + (a.score || 0), 0) / attempts.length : 0;
+
+        return {
+            exam,
+            metrics: {
+                totalAttempts,
+                uniqueUsers,
+                bestGrade,
+                avgGrade
+            },
+            attempts
+        };
     }
 }

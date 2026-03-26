@@ -116,6 +116,8 @@ model Question {
   text          String
   options       Json? // For MCQ: ["A", "B", "C", "D"]
   correctAnswer String? // For MCQ/TF
+  imageUrl      String?
+  imageDesc     String?      @db.Text
   points        Int          @default(1)
   order         Int          @default(0)
   exam          Exam         @relation(fields: [examId], references: [id], onDelete: Cascade)

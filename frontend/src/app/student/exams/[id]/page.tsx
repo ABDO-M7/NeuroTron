@@ -106,7 +106,18 @@ export default function ExamTakingPage() {
             <Card className="min-h-[400px]">
                 <CardContent className="p-8">
                     <div className="flex justify-between items-start mb-6 pb-6 border-b">
-                        <h2 className="text-2xl font-semibold leading-snug">{question.text}</h2>
+                        <div className="flex-1">
+                            {question.imageUrl && (
+                                <div className="mb-5 rounded-xl overflow-hidden border border-[#2a2a3a] bg-[#12121a] flex justify-center p-3">
+                                    <img
+                                        src={question.imageUrl}
+                                        alt="Question visual"
+                                        className="max-h-72 object-contain rounded-lg"
+                                    />
+                                </div>
+                            )}
+                            <h2 className="text-2xl font-semibold leading-snug">{question.text}</h2>
+                        </div>
                         <div className="shrink-0 ml-4 bg-green-500/10 text-green-400 px-3 py-1 rounded-full text-sm font-medium border border-green-500/20">
                             {question.points} Points
                         </div>

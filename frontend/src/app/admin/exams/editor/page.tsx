@@ -7,7 +7,7 @@ import { api } from "@/lib/api"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { ArrowLeft, Save, Plus, Trash2, BrainCircuit, CheckSquare, ListFilter } from "lucide-react"
+import { ArrowLeft, Save, Plus, Trash2, BrainCircuit, CheckSquare, ListFilter, Image as ImageIcon, Eye } from "lucide-react"
 
 function ExamEditorContent() {
     const searchParams = useSearchParams()
@@ -46,7 +46,9 @@ function ExamEditorContent() {
                 type: q.type,
                 text: q.text,
                 points: parseInt(q.points) || 1,
-                order: idx
+                order: idx,
+                imageUrl: q.imageUrl || undefined,
+                imageDesc: q.imageDesc || undefined,
             }
             if (q.type === 'MCQ') {
                 payload.options = q.options
@@ -71,7 +73,7 @@ function ExamEditorContent() {
     }
 
     const addQuestion = (type: string) => {
-        const base = { id: Math.random().toString(), type, text: '', points: 5 }
+        const base = { id: Math.random().toString(), type, text: '', points: 5, imageUrl: '', imageDesc: '' }
         if (type === 'MCQ') setQuestions([...questions, { ...base, options: ['', '', '', ''], correctAnswer: '' }])
         if (type === 'TRUE_FALSE') setQuestions([...questions, { ...base, correctAnswer: 'true' }])
         if (type === 'ESSAY') setQuestions([...questions, { ...base, points: 20 }])
@@ -218,6 +220,55 @@ function ExamEditorContent() {
                                     </div>
                                 </div>
                             )}
+
+                            {/* ── Image Upload Section (all question types) ── */}
+                            <div className="mt-4 p-4 bg-gray-50 border border-dashed border-gray-200 rounded-lg space-y-3">
+                                <div className="flex items-center gap-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                                    <ImageIcon className="w-3.5 h-3.5" />
+                                    Question Image (Optional)
+                                </div>
+                                <div className="flex gap-2 items-center">
+                                    <Input
+                                        value={q.imageUrl || ''}
+                                        onChange={e => updateQ(q.id, 'imageUrl', e.target.value)}
+                                        placeholder="Paste image URL…"
+                                        className="flex-1 h-8 text-sm bg-white"
+                                    />
+                                    <div className="relative shrink-0">
+                                        <input
+                                            type="file"
+                                            accept="image/*"
+                                            className="absolute inset-0 opacity-0 cursor-pointer z-10"
+                                            onChange={e => {
+                                                const file = e.target.files?.[0]
+                                                if (!file) return
+                                                const reader = new FileReader()
+                                                reader.onload = () => updateQ(q.id, 'imageUrl', reader.result as string)
+                                                reader.readAsDataURL(file)
+                                            }}
+                                        />
+                                        <Button type="button" variant="outline" size="sm" className="h-8 text-xs gap-1.5 border-gray-300">
+                                            <ImageIcon className="w-3 h-3" /> Upload
+                                        </Button>
+                                    </div>
+                                </div>
+                                {q.imageUrl && (
+                                    <img src={q.imageUrl} alt="Preview" className="max-h-48 rounded-lg object-contain border border-gray-100 bg-white p-1" />
+                                )}
+                                <div className="space-y-1">
+                                    <label className="text-xs font-medium text-gray-500 flex items-center gap-1.5">
+                                        <Eye className="w-3 h-3 text-amber-500" />
+                                        Hidden AI Description <span className="text-gray-400 font-normal">(only sent to Gemini, never shown to students)</span>
+                                    </label>
+                                    <textarea
+                                        value={q.imageDesc || ''}
+                                        onChange={e => updateQ(q.id, 'imageDesc', e.target.value)}
+                                        rows={2}
+                                        placeholder="Describe the image for the AI grader (e.g. 'This is a network diagram with 3 nodes: A, B, C...')"
+                                        className="w-full p-2 text-sm text-gray-700 bg-amber-50 border border-amber-200 rounded-md focus:ring-amber-400 resize-y outline-none placeholder:text-gray-400"
+                                    />
+                                </div>
+                            </div>
                         </CardContent>
                     </Card>
                 ))}
