@@ -10,8 +10,9 @@ const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL?.replace("/api", "") || "htt
 
 import Image from "next/image"
 import { Logo } from "@/components/ui/Logo"
+import { Suspense } from "react"
 
-export default function LoginPage() {
+function LoginForm() {
     const router = useRouter()
     const searchParams = useSearchParams()
     const { login, isAuthenticated, user } = useAuthStore()
@@ -126,5 +127,13 @@ export default function LoginPage() {
                 </CardContent>
             </Card>
         </div>
+    )
+}
+
+export default function LoginPage() {
+    return (
+        <Suspense fallback={<div className="min-h-screen flex items-center justify-center text-white">Loading...</div>}>
+            <LoginForm />
+        </Suspense>
     )
 }

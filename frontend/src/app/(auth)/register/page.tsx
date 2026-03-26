@@ -11,8 +11,9 @@ const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL?.replace("/api", "") || "htt
 
 import Image from "next/image"
 import { Logo } from "@/components/ui/Logo"
+import { Suspense } from "react"
 
-export default function RegisterPage() {
+function RegisterForm() {
     const router = useRouter()
     const searchParams = useSearchParams()
     const { login, isAuthenticated, user } = useAuthStore()
@@ -115,5 +116,13 @@ export default function RegisterPage() {
                 </CardFooter>
             </Card>
         </div>
+    )
+}
+
+export default function RegisterPage() {
+    return (
+        <Suspense fallback={<div className="min-h-screen flex items-center justify-center text-white">Loading...</div>}>
+            <RegisterForm />
+        </Suspense>
     )
 }
