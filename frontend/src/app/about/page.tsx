@@ -11,9 +11,9 @@ const features = [
         description: "Submit essays for instant Gemini AI feedback. After every exam, get a personalized revision roadmap identifying exactly where to focus next.",
     },
     {
-        icon: "🖼️",
-        title: "Visual Question Context",
-        description: "Instructors can attach images to exam questions. A hidden AI description provides Gemini with full visual context for more accurate grading.",
+        icon: "🛠️",
+        title: "Interactive Learning",
+        description: "Engage with dynamic content right inside your lessons — execute live code snippets, solve math problems, and interactive blocks.",
     },
     {
         icon: "📚",
@@ -23,12 +23,12 @@ const features = [
     {
         icon: "🔥",
         title: "Streaks & Progress Tracking",
-        description: "Build daily learning streaks, watch your course progress update automatically as instructors add new content, and see your real exam grades like 32/40.",
+        description: "Build daily learning streaks, watch your course progress update automatically.",
     },
     {
         icon: "📊",
         title: "Exam Performance Analytics",
-        description: "After every exam, you can see the Top 3 students on a live in-exam leaderboard. Admins get a full dashboard with participation counts, grade distributions, and ranked student tables.",
+        description: "After every exam, you can see the Top 3 students on a live in-exam leaderboard.",
     },
     {
         icon: "📝",
@@ -38,7 +38,7 @@ const features = [
     {
         icon: "🎓",
         title: "Curriculum Organization",
-        description: "Courses are organized by tracks, and lessons by topics. Instructors control ordering, students can filter and search by topic.",
+        description: "Courses are organized by tracks, and lessons by topics. students can filter and search by topic.",
     },
     {
         icon: "🔐",

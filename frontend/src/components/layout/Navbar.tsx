@@ -166,14 +166,8 @@ export function Navbar() {
                                     <div className="px-4 md:px-6 h-[60px] flex items-center gap-4 md:gap-6">
 
                                         {/* Logo - left */}
-                                        <Link href={homeHref} className="flex items-center gap-2.5 group shrink-0">
-                                            <div className="relative">
-                                                <div className="absolute inset-0 rounded-lg bg-violet-500/30 blur-md group-hover:blur-lg transition-all duration-300" />
-                                                <div className="relative w-8 h-8 rounded-lg bg-gradient-to-br from-violet-600/80 to-indigo-600/80 flex items-center justify-center border border-violet-500/30 shadow-inner">
-                                                    <Image src="/logo.svg" alt="NeuroTron" width={16} height={16} priority unoptimized />
-                                                </div>
-                                            </div>
-                                            <Logo className="text-base tracking-tight text-white hidden sm:block font-semibold" />
+                                        <Link href={homeHref} className="flex items-center group shrink-0 pr-2">
+                                            <Logo className="text-xl tracking-tight text-white font-semibold drop-shadow-md transition-transform duration-300 group-hover:scale-105" />
                                         </Link>
 
                                         {/* Divider */}
