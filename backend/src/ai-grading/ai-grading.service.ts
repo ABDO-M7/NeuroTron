@@ -169,9 +169,9 @@ Here is the breakdown of their answers:
 
             return response.text.trim();
 
-        } catch (error) {
+        } catch (error: any) {
             this.logger.error('AI attempt analysis failed', error);
-            return "> 🤖 **Analysis Error:** We encountered a network or system error while generating your personalized AI report. Please try clicking the generate button again later.";
+            return `> 🤖 **Analysis Error:** We encountered an issue while generating your report.\n\n**Technical Details:** ${error.message || String(error)}`;
         }
     }
 }
