@@ -171,7 +171,13 @@ Here is the breakdown of their answers:
 
         } catch (error: any) {
             this.logger.error('AI attempt analysis failed', error);
-            return `> 🤖 **Analysis Error:** We encountered an issue while generating your report.\n\n**Technical Details:** ${error.message || String(error)}`;
+            
+            const errMsg = error.message || String(error);
+            if (errMsg.includes('429') || errMsg.toLowerCase().includes('quota')) {
+                return "> ⏳ **AI Cooldown:** You've reached the free-tier limit for AI requests. Please wait about a minute to let the AI cool down, then try creating your report again!";
+            }
+
+            return `> 🤖 **Analysis Error:** We encountered an issue while generating your report.\n\n**Technical Details:** ${errMsg}`;
         }
     }
 }
